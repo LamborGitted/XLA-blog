@@ -1,6 +1,6 @@
-# Lantxx's XL blog
+# Lantxx's XLA blog
 
-### 一个界面特别的博客网站，代号XL，名曰：XL blog
+### 一个界面特别的博客网站，代号XL，名曰：XLA blog
 
 
 
