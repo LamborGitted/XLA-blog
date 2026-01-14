@@ -6,8 +6,11 @@ import { watch } from "vue";
 import SearchBox from "@/Component/search-box.vue";
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 
-import { docs as loadedDocs} from "@/Script/useDocs";
-const docsList =loadedDocs;
+import { docs, type DocMeta} from "@/Script/useDocs";
+import MdCord from "@/Component/md-cord.vue";
+const docsList =docs;
+const docList = ref<DocMeta[]>(docs);
+const selectedDoc = ref<DocMeta | null>(docList.value[0] ?? null);
 
 const rowRef = ref<HTMLElement | null>(null);
 let items: HTMLElement[] = [];
@@ -24,56 +27,50 @@ let inertiaRaf: number | null = null;
 
 
 
-watch(docsList, async () => {
-  await nextTick();
-  if (!rowRef.value) return;
 
-  items = Array.from(
-      rowRef.value.querySelectorAll(".enum-item")
-  ) as HTMLElement[];
-
-  updateSelected();
-});
-
+//enum-items
 
 function updateSelected() {
   if (!rowRef.value) return;
 
   const row = rowRef.value;
-  const screenCenterInRow = window.innerHeight / 2 - row.getBoundingClientRect().top + row.scrollTop;
+  const screenCenterInRow =
+      window.innerHeight / 2 -
+      row.getBoundingClientRect().top +
+      row.scrollTop;
 
-  let closest: HTMLElement | null = null;
+  let closestIndex = -1;
   let minDistance = Infinity;
 
-  for (const item of items) {
-    const itemCenter = item.offsetTop + item.offsetHeight / 2;
+  items.forEach((el, index) => {
+    const itemCenter = el.offsetTop + el.offsetHeight / 2;
     const distance = Math.abs(itemCenter - screenCenterInRow);
 
     if (distance < minDistance) {
       minDistance = distance;
-      closest = item;
+      closestIndex = index;
     }
-  }
+  });
 
-  items.forEach(el => {
-    const itemCenter = el.offsetTop + el.offsetHeight / 2;
-    const isSelected = el === closest; // 只选最近的
+  items.forEach((el, index) => {
+    const isSelected = index === closestIndex;
 
     if (isSelected) {
       el.classList.add("is-selected");
-      el.style.transform = `scale(1.25) translateY(0px)`;
+      el.style.transform = "scale(1.25)";
       el.style.opacity = "1";
       el.style.zIndex = "10";
     } else {
       el.classList.remove("is-selected");
-      const offset = Math.min(Math.abs(itemCenter - screenCenterInRow) * 0.05, 20);
-      el.style.transform = `scale(0.85) translateY(${offset}px)`;
+      el.style.transform = "scale(0.85)";
       el.style.opacity = "0.45";
       el.style.zIndex = "1";
     }
   });
-}
 
+  // ✅ 这里才是安全的
+  selectedDoc.value = docList.value[closestIndex] ?? null;
+}
 
 
 function onScroll() {
@@ -82,7 +79,6 @@ function onScroll() {
   // 每一帧都尝试更新选中状态
   updateSelected();
 }
-
 
 function onMouseDown(e: MouseEvent) {
   if (!rowRef.value) return;
@@ -150,7 +146,6 @@ function startInertiaScroll() {
   inertiaRaf = requestAnimationFrame(step);
 }
 
-
 function snapToClosestItem() {
   if (!rowRef.value) return;
 
@@ -185,7 +180,6 @@ function snapToClosestItem() {
     behavior: "smooth"
   });
 }
-
 
 onMounted(async () => {
   if (!rowRef.value) return;
@@ -222,10 +216,21 @@ onUnmounted(() => {
 
 //Search-box
 const searchBoxRef = ref<InstanceType<typeof SearchBox> | null>(null);
-
 function showSearch() {
   searchBoxRef.value?.showSearchBox?.(); // 调用暴露的方法
 }
+
+//open GitHub
+function goGithub() {
+  window.open(
+      'https://github.com/LamborGitted/XLA-blog',
+      '_blank'
+  )
+}
+
+//filter
+
+
 
 </script>
 
@@ -254,12 +259,19 @@ function showSearch() {
     <div class="tools">
         <tools class = "tool" @click="showSearch">Search</tools>
         <tools class = "tool">Filter</tools>
-        <tools class = "tool">Github</tools>
+        <tools class = "tool" @click="goGithub">Github</tools>
 
     </div>
     <div class="search-box">
       <SearchBox ref="searchBoxRef" />
     </div>
+
+    <md-cord>
+      <component
+          v-if="selectedDoc"
+          :is="selectedDoc.component"
+      />
+    </md-cord>
 
   </div>
 </template>
@@ -270,7 +282,7 @@ function showSearch() {
   position: absolute;
 
   width: 460px;
-  height: 100%;
+  height: 100vh;
   left: 15vw;
   background: linear-gradient(to right, #005dc8, rgb(0, 93, 200));
   transform: skew(-19deg);
@@ -373,6 +385,10 @@ function showSearch() {
 .scroll-spacer {
   height: calc(100vh - 18px);
   pointer-events: none;
+}
+
+.search-box{
+  z-index: 1000;
 }
 
 </style>

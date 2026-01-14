@@ -16,6 +16,9 @@
   "dependencies": {
     "element-plus": "^2.13.1",
     "gray-matter": "^4.0.3",
+    "markdown-it-container": "^4.0.0",
+    "markdown-it-copy": "^1.2.0",
+    "shiki": "^3.21.0",
     "vite-plugin-md": "^0.22.5",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"

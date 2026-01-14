@@ -16,7 +16,7 @@
  /* border-radius: 16px;*/
   /* 毛玻璃核心 */
   background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px) saturate(180%);
+  //backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   /* Apple 式细边框 */
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -39,6 +39,10 @@
   margin-top: 6px;
   font-size: 14px;
   opacity: 0.65;
+}
+
+.text .sub-text{
+  transform: skew(19deg);
 }
 
 </style>

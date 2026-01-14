@@ -49,15 +49,15 @@ defineExpose({
 <style scoped>
 .search-box {
   position: absolute;
-  top: 15vh;
+  top: 1vh;
   left: calc(50vw - 200px);
   width: 400px;
   //transform: skew(-19deg);
   background: rgba(255, 255, 255, 0.1);
-  padding: 0px 10px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
-  border-radius: 10px;
+  border-radius: 30px;
   backdrop-filter: blur(6px);
   z-index: 5;
 }

@@ -1,0 +1,25 @@
+/* src/styles/global.css */
+
+/* Markdown 基础排版 */
+.markdown-body {
+    line-height: 1.7;
+    font-size: 14.5px;
+}
+
+/* ===== Code Block ===== */
+pre {
+    position: relative;
+    border-radius: 14px;
+    padding: 20px 18px;
+    margin: 20px 0;
+
+    background: rgba(10, 10, 10, 0.65);
+    backdrop-filter: blur(6px);
+
+    overflow-x: auto;
+    font-size: 13.5px;
+}
+
+pre code {
+    font-family: 'JetBrains Mono', monospace;
+}
