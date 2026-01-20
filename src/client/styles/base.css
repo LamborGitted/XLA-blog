@@ -1,0 +1,46 @@
+:root {
+    /* 基础色彩 */
+    --color-bg: #ffffff;
+    --color-surface: #f6f8fa;
+    --color-surface-blur: rgba(255,255,255,0.16);
+    --color-muted: #8b949e;
+    --color-accent: #e758bd;
+    --color-primary: #59aad5;
+    --color-text: #312a2a;
+
+    /* 毛玻璃专用 */
+    --glass-bg: var(--color-surface-blur);
+    --glass-border: rgba(255,255,255,0.3);
+    --glass-blur: 10px;
+
+    /* 字体 */
+    --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* 圆角 */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+
+    /* 间距 */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+}
+
+html, body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    /*font-family: var(--font-body);*/
+    /*line-height: 1.6;*/
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: var(--color-accent);
+    text-decoration: none;
+}
+
+

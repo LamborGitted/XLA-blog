@@ -1,7 +1,6 @@
 ---
-title: NixOS入门介绍
-subtitle: 
-date: 2026-01-13
+subtitle:  NixOS
+date:  2026-01-13
 ---
 
 

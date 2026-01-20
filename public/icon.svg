@@ -1,0 +1,29 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景透明 -->
+  <rect width="120" height="120" fill="none"/>
+
+  <!-- 左上蓝色大三角 -->
+  <polygon points="0,0 90,0 0,90" fill="url(#blueGradient)"/>
+
+  <!-- 右下绿色大三角 -->
+  <polygon points="120,120 30,120 120,30" fill="url(#greenGradient)"/>
+
+  <!-- 中心小方块 -->
+  <rect x="45" y="45" width="30" height="30" fill="url(#centerGradient)"/>
+
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="blueGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#007BFF"/>
+      <stop offset="100%" stop-color="#00BFFF"/>
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00FF7F"/>
+      <stop offset="100%" stop-color="#32CD32"/>
+    </linearGradient>
+    <linearGradient id="centerGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00BFFF"/>
+      <stop offset="100%" stop-color="#32CD32"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,6 +1,6 @@
 ---
 title: Apple
-subtitle:
+subtitle: Apple
 ---
 
 # Apple

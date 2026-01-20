@@ -1,33 +1,29 @@
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
-import { Search } from "@element-plus/icons-vue";
+import {ref, defineExpose, watch} from 'vue'
+import { useArticleList } from '@/client/composables/useArticleList'
 
-const visible = ref(false);
-const query = ref("");
+const { query, searchArticles } = useArticleList()
+const visible = ref(false)
 
-// 对外暴露方法
-function showSearchBox() {
-  visible.value = true;
-  nextTick(() => {
-    const input = document.querySelector<HTMLInputElement>(".search-input");
-    input?.focus();
-  });
+// 显示搜索框
+function show() {
+  visible.value = true
 }
 
+// 隐藏搜索框
 function hide() {
-  visible.value = false;
-  query.value = "";
+  visible.value = false
 }
+
+// 执行搜索
+watch(query, searchArticles)
 
 function onSearch() {
-  console.log("搜索内容:", query.value);
-  // TODO: 可以 emit 或调用搜索逻辑
+  searchArticles(query.value)
+  hide()
 }
-
-// 暴露给父组件调用
-defineExpose({
-  showSearchBox
-});
+// 暴露方法给父组件
+defineExpose({ show, hide })
 </script>
 
 <template>
@@ -39,9 +35,6 @@ defineExpose({
         placeholder="输入关键字搜索"
         @keyup.enter="onSearch"
     />
-    <el-icon class="search-btn" @click="onSearch">
-      <Search />
-    </el-icon>
     <div class="close-btn" @click="hide">×</div>
   </div>
 </template>
@@ -53,13 +46,14 @@ defineExpose({
   left: calc(50vw - 200px);
   width: 400px;
   //transform: skew(-19deg);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.3);
   padding: 0 20px;
   display: flex;
   align-items: center;
   border-radius: 30px;
   backdrop-filter: blur(6px);
   z-index: 5;
+  height: 60px;
 }
 
 .search-input {
@@ -73,7 +67,7 @@ defineExpose({
 }
 
 .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(145, 145, 145, 0.6);
 }
 
 .search-btn {
