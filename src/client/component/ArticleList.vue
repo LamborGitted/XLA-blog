@@ -39,7 +39,7 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   z-index: 1;
 
   /* 默认模糊背景 */
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--color-surfaceBlur);
   backdrop-filter: blur(6px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
 
@@ -55,7 +55,7 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   scroll-behavior: smooth;
   overscroll-behavior: contain;
 
@@ -83,28 +83,34 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   margin-bottom: 20px;
   border-radius: 8px;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.514);
-  
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
 .article-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-accent);
+  opacity: 0.8;
 }
 
 .article-item.is-selected {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-primary);
+}
+
+.article-item.is-selected .title,
+.article-item.is-selected .subtitle {
+  color: var(--color-bg);
 }
 
 .title {
   font-size: 16px;
   font-weight: 600;
-  color: #292929;
+  color: var(--color-text);
   margin-bottom: 5px;
 }
 
 .subtitle {
   font-size: 14px;
-  color: rgba(168, 46, 46, 0.8);
+  color: var(--color-primary);
   font-weight: 400;
 }
 

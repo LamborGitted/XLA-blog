@@ -37,10 +37,6 @@ withDefaults(defineProps<Props>(), {
 <style scoped>
 /* ===== 基础变量 ===== */
 .glass-button {
-  --glass-bg: rgba(255, 255, 255, 0.35);
-  --glass-border: rgba(255, 255, 255, 0.45);
-  --glass-shadow: rgba(0, 0, 0, 0.08);
-  --glass-text: #1f2328;
   transform: none;
 
   display: inline-flex;
@@ -50,20 +46,20 @@ withDefaults(defineProps<Props>(), {
 
   padding: 0.6rem 1.1rem;
   border-radius: 25px;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--color-border);
   background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.55),
-      rgba(255, 255, 255, 0.25)
+      var(--color-surface),
+      var(--color-surfaceBlur)
   );
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
 
-  color: var(--glass-text);
+  color: var(--color-text);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 8px 20px var(--glass-shadow);
+  box-shadow: 0 8px 20px var(--color-shadow);
   transition:
       /* background 0.25s ease, */
       transform 0.15s ease,
@@ -74,15 +70,16 @@ withDefaults(defineProps<Props>(), {
 .glass-button:hover {
   background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.65),
-      rgba(255, 255, 255, 0.35)
+      var(--color-surface),
+      var(--color-surfaceBlur)
   );
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  opacity: 0.85;
+  box-shadow: 0 12px 28px var(--color-shadow);
 }
 
 .glass-button:active {
   transform: scale(1.2);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 16px var(--color-shadow);
 }
 
 /* ===== Disabled ===== */

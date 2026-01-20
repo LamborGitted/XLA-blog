@@ -44,11 +44,6 @@ function handleClick(item: NavItem, index: number) {
 
 <style scoped>
 .navbar {
-  --glass-bg: rgba(255, 255, 255, 0.35);
-  --glass-border: rgba(255, 255, 255, 0.45);
-  --glass-shadow: rgba(0, 0, 0, 0.08);
-  --glass-text: #1f2328;
-
   display: inline-flex;
   flex-direction: row;
   align-items: center;
@@ -57,11 +52,11 @@ function handleClick(item: NavItem, index: number) {
 
   padding: 0.6rem 1.1rem;
   border-radius: 30px;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--color-border);
   background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.73),
-      rgba(255, 255, 255, 0.25)
+      var(--color-surface),
+      var(--color-surfaceBlur)
   );
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
@@ -87,7 +82,7 @@ function handleClick(item: NavItem, index: number) {
   display: flex;
   gap: 0.3rem;
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--color-surfaceBlur);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   opacity: 0;

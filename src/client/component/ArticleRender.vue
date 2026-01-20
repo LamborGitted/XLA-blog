@@ -136,6 +136,11 @@ defineExpose({ show, hide })
     padding: 0;
 }
 
+/* 暗色模式下的遮罩 */
+[data-theme-mode="dark"] .article-render-overlay {
+    background: rgba(0, 0, 0, 0.6);
+}
+
 /* 第二层：文章渲染器容器 - 从下往上弹出 */
 .article-render-container {
     position: relative;
@@ -145,18 +150,17 @@ defineExpose({ show, hide })
     margin: 0 auto;
     background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.92),
-        rgba(255, 255, 255, 0.88)
+        var(--color-surface),
+        var(--color-surfaceBlur)
     );
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border-radius: 30px 30px 0 0;
-    box-shadow:
-        0 -10px 40px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    box-shadow: var(--color-shadow);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border: 1px solid var(--color-border);
 }
 
 /* 第三层：关闭按钮层 - 绝对定位在右上角 */
@@ -172,7 +176,8 @@ defineExpose({ show, hide })
     height: 44px;
     border-radius: 50%;
     border: none;
-    background: rgba(0, 0, 0, 0.08);
+    background: var(--color-muted);
+    opacity: 0.3;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     cursor: pointer;
@@ -183,7 +188,8 @@ defineExpose({ show, hide })
 }
 
 .close-button:hover {
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--color-textSecondary);
+    opacity: 0.5;
     transform: rotate(90deg) scale(1.1);
 }
 
@@ -193,7 +199,7 @@ defineExpose({ show, hide })
 
 .close-icon {
     font-size: 32px;
-    color: #333;
+    color: var(--color-text);
     line-height: 1;
     font-weight: 300;
 }
@@ -218,25 +224,27 @@ defineExpose({ show, hide })
 }
 
 .content-scroll-layer::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--color-muted);
     border-radius: 4px;
+    opacity: 0.5;
 }
 
 .content-scroll-layer::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.25);
+    background: var(--color-textSecondary);
+    opacity: 0.7;
 }
 
 /* ==================== 文章头部样式 ==================== */
 .article-header {
     margin-bottom: 40px;
     padding-bottom: 25px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .article-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--color-text);
     margin: 0 0 15px 0;
     line-height: 1.2;
     letter-spacing: -0.5px;
@@ -244,7 +252,7 @@ defineExpose({ show, hide })
 
 .article-subtitle {
     font-size: 1.2rem;
-    color: #666;
+    color: var(--color-textSecondary);
     margin: 0 0 15px 0;
     line-height: 1.5;
     font-weight: 400;
@@ -258,7 +266,7 @@ defineExpose({ show, hide })
 
 .article-date {
     font-size: 0.9rem;
-    color: #999;
+    color: var(--color-muted);
     font-weight: 500;
 }
 
@@ -269,12 +277,12 @@ defineExpose({ show, hide })
     justify-content: center;
     height: 200px;
     font-size: 1.1rem;
-    color: #666;
+    color: var(--color-textSecondary);
 }
 
 /* ==================== Markdown 内容样式 ==================== */
 .article-content {
-    color: #2c3e50;
+    color: var(--color-text);
     line-height: 1.8;
     font-size: 1.05rem;
 }
@@ -284,25 +292,25 @@ defineExpose({ show, hide })
     font-size: 2rem;
     font-weight: 700;
     margin: 40px 0 20px 0;
-    color: #1a1a1a;
+    color: var(--color-text);
     padding-bottom: 10px;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid var(--color-border);
 }
 
 .markdown-body :deep(h2) {
     font-size: 1.6rem;
     font-weight: 600;
     margin: 35px 0 15px 0;
-    color: #2c3e50;
+    color: var(--color-text);
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .markdown-body :deep(h3) {
     font-size: 1.3rem;
     font-weight: 600;
     margin: 30px 0 12px 0;
-    color: #34495e;
+    color: var(--color-text);
 }
 
 .markdown-body :deep(h4),
@@ -311,7 +319,7 @@ defineExpose({ show, hide })
     font-size: 1.1rem;
     font-weight: 600;
     margin: 25px 0 10px 0;
-    color: #34495e;
+    color: var(--color-text);
 }
 
 .markdown-body :deep(p) {
@@ -319,44 +327,98 @@ defineExpose({ show, hide })
 }
 
 .markdown-body :deep(a) {
-    color: #3498db;
+    color: var(--color-primary);
     text-decoration: none;
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s;
 }
 
 .markdown-body :deep(a:hover) {
-    border-bottom-color: #3498db;
+    border-bottom-color: var(--color-primary);
 }
 
 .markdown-body :deep(code) {
-    background: rgba(0, 0, 0, 0.06);
+    background: var(--color-muted);
+    opacity: 0.5;
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.9em;
-    color: #e74c3c;
+    color: var(--color-text);
+    font-weight: 500;
 }
 
 .markdown-body :deep(pre) {
-    background: #282c34;
+    background: var(--color-muted);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 20px;
     overflow-x: auto;
     margin: 20px 0;
+    position: relative;
+}
+
+/* 亮色模式代码块优化 */
+[data-theme-mode="light"] .markdown-body :deep(pre) {
+    background: #f6f8fa;
+    border-color: #d0d7de;
+}
+
+[data-theme-mode="light"] .markdown-body :deep(pre code) {
+    color: #24292f;
+}
+
+[data-theme-mode="light"] .markdown-body :deep(code) {
+    color: var(--color-primary);
+    opacity: 1;
+}
+
+/* 暗色模式代码块优化 */
+[data-theme-mode="dark"] .markdown-body :deep(pre) {
+    background: #161b22;
+    border-color: #30363d;
+}
+
+[data-theme-mode="dark"] .markdown-body :deep(pre code) {
+    color: #c9d1d9;
+}
+
+[data-theme-mode="dark"] .markdown-body :deep(code) {
+    color: var(--color-primary);
+    opacity: 1;
 }
 
 .markdown-body :deep(pre code) {
     background: transparent;
     padding: 0;
-    color: #abb2bf;
+    font-weight: 400;
+}
+
+/* 代码块滚动条样式 */
+.markdown-body :deep(pre)::-webkit-scrollbar {
+    height: 10px;
+}
+
+.markdown-body :deep(pre)::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.markdown-body :deep(pre)::-webkit-scrollbar-thumb {
+    background: var(--color-textSecondary);
+    border-radius: 5px;
+    opacity: 0.3;
+}
+
+.markdown-body :deep(pre)::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+    opacity: 0.6;
 }
 
 .markdown-body :deep(blockquote) {
-    border-left: 4px solid #3498db;
+    border-left: 4px solid var(--color-primary);
     padding-left: 20px;
     margin: 20px 0;
-    color: #7f8c8d;
+    color: var(--color-textSecondary);
     font-style: italic;
 }
 
@@ -384,18 +446,20 @@ defineExpose({ show, hide })
 
 .markdown-body :deep(th),
 .markdown-body :deep(td) {
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     padding: 12px;
     text-align: left;
 }
 
 .markdown-body :deep(th) {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--color-muted);
+    opacity: 0.3;
     font-weight: 600;
 }
 
 .markdown-body :deep(tr:hover) {
-    background: rgba(0, 0, 0, 0.02);
+    background: var(--color-muted);
+    opacity: 0.2;
 }
 
 /* ==================== 文章导航样式 ==================== */
@@ -404,7 +468,7 @@ defineExpose({ show, hide })
     gap: 20px;
     margin-top: 50px;
     padding-top: 30px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--color-border);
 }
 
 .nav-button {
@@ -413,10 +477,10 @@ defineExpose({ show, hide })
     align-items: center;
     gap: 15px;
     padding: 20px;
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--color-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--color-border);
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -424,10 +488,10 @@ defineExpose({ show, hide })
 }
 
 .nav-button:hover {
-    background: rgba(0, 0, 0, 0.06);
-    border-color: rgba(0, 0, 0, 0.12);
+    background: var(--color-surface);
+    border-color: var(--color-primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--color-shadow);
 }
 
 .nav-button:active {
@@ -444,7 +508,7 @@ defineExpose({ show, hide })
 
 .nav-arrow {
     font-size: 24px;
-    color: #333;
+    color: var(--color-text);
     flex-shrink: 0;
 }
 
@@ -458,7 +522,7 @@ defineExpose({ show, hide })
 
 .nav-label {
     font-size: 12px;
-    color: #999;
+    color: var(--color-muted);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -466,7 +530,7 @@ defineExpose({ show, hide })
 
 .nav-title {
     font-size: 14px;
-    color: #333;
+    color: var(--color-text);
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;

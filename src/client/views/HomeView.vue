@@ -4,7 +4,8 @@ import BackgroundSwitcher from "@/client/component/BackgroundSwitcher.vue";
 import ArticleList from "@/client/component/ArticleList.vue";
 import ArticleRender from "@/client/component/ArticleRender.vue";
 import FilterPanel from "@/client/component/FilterPanel.vue";
-import NavBar from "@/client/Layout/NavBar.vue";
+import ControlPanel from "@/client/component/ControlPanel.vue";
+import PageTitle from "@/client/component/PageTitle.vue";
 import { useArticleList } from '@/client/composables/useArticleList'
 
 // 创建单例的 articleList 状态
@@ -19,10 +20,12 @@ provide('articleListState', articleListState)
 
 <template>
   <div class="main">
+      <PageTitle />
       <FilterPanel />
       <ArticleList class="articleList"/>
       <BackgroundSwitcher/>
       <ArticleRender />
+      <ControlPanel />
   </div>
 </template>
 

@@ -26,6 +26,31 @@ function selectSort(option: SortOption) {
 
 <template>
     <div class="filter-panel">
+
+      <!-- 排序按钮 -->
+      <div class="sort-wrapper">
+        <button class="sort-button" @click="toggleSortMenu">
+          <span class="sort-icon">{{ currentSortOption?.icon }}</span>
+          <span class="sort-label">{{ currentSortOption?.label }}</span>
+        </button>
+
+        <!-- 排序下拉菜单 -->
+        <Transition name="fade">
+          <div v-if="showSortMenu" class="sort-menu">
+            <div
+                v-for="option in SORT_OPTIONS"
+                :key="option.value"
+                class="sort-option"
+                :class="{ 'is-active': option.value === sortBy }"
+                @click="selectSort(option.value)"
+            >
+              <span class="option-icon">{{ option.icon }}</span>
+              <span class="option-label">{{ option.label }}</span>
+            </div>
+          </div>
+        </Transition>
+      </div>
+
         <!-- 搜索框 -->
         <div class="search-wrapper">
             <input
@@ -38,42 +63,20 @@ function selectSort(option: SortOption) {
             <div class="search-icon"></div>
         </div>
 
-        <!-- 排序按钮 -->
-        <div class="sort-wrapper">
-            <button class="sort-button" @click="toggleSortMenu">
-                <span class="sort-icon">{{ currentSortOption?.icon }}</span>
-                <span class="sort-label">{{ currentSortOption?.label }}</span>
-            </button>
 
-            <!-- 排序下拉菜单 -->
-            <Transition name="fade">
-                <div v-if="showSortMenu" class="sort-menu">
-                    <div
-                        v-for="option in SORT_OPTIONS"
-                        :key="option.value"
-                        class="sort-option"
-                        :class="{ 'is-active': option.value === sortBy }"
-                        @click="selectSort(option.value)"
-                    >
-                        <span class="option-icon">{{ option.icon }}</span>
-                        <span class="option-label">{{ option.label }}</span>
-                    </div>
-                </div>
-            </Transition>
-        </div>
     </div>
 </template>
 
 <style scoped>
 .filter-panel {
     position: absolute;
-    top: 3vh;
+    top: 24px;
     left: 50%;
+    transform: translate(-50%);
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     z-index: 10;
-    transform: /*skew(-19deg)*/ translateX(20vw);
 }
 
 /* 搜索框样式 */
@@ -81,42 +84,43 @@ function selectSort(option: SortOption) {
     position: relative;
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.63);
+    background: var(--color-surface);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border-radius: 25px;
-    padding: 0 20px;
-    height: 50px;
+    padding: 0 16px;
+    height: 44px;
+    border: 1px solid var(--color-border);
     transition: all 0.3s ease;
 }
 
 .search-wrapper:hover {
-    background: rgba(255, 255, 255, 0.35);
+    background: var(--color-surface);
+    opacity: 0.9;
 }
 
 .search-wrapper:focus-within {
-    background: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: var(--color-surface);
+    box-shadow: var(--color-shadow);
+    border-color: var(--color-primary);
 }
 
 .search-input {
-    width: 200px;
+    width: 180px;
     padding: 0;
     border: none;
     outline: none;
     background: transparent;
-    font-size: 16px;
-    color: #292929;
-    //transform: skew(19deg);
+    font-size: 14px;
+    color: var(--color-text);
 }
 
 .search-input::placeholder {
-    color: rgba(41, 41, 41, 0.5);
+    color: var(--color-textSecondary);
 }
 
 .search-icon {
     font-size: 18px;
-    //transform: skew(19deg);
 }
 
 /* 排序按钮样式 */
@@ -127,38 +131,38 @@ function selectSort(option: SortOption) {
 .sort-button {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.25);
+    gap: 6px;
+    background: var(--color-surface);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
-    border: none;
+    border: 1px solid var(--color-border);
     border-radius: 25px;
-    padding: 0 20px;
-    height: 50px;
+    padding: 0 16px;
+    height: 44px;
     cursor: pointer;
     transition: all 0.3s ease;
-    //transform: skew(19deg);
 }
 
 .sort-button:hover {
-    background: rgba(255, 255, 255, 0.35);
-    transform: /*skew(19deg)*/ scale(1.05);
+    background: var(--color-surface);
+    opacity: 0.9;
+    transform: scale(1.05);
 }
 
 .sort-button:active {
-    transform: /*skew(19deg)*/ scale(0.95);
+    transform: scale(0.95);
 }
 
 .sort-icon {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
-    color: #292929;
+    color: var(--color-text);
 }
 
 .sort-label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
-    color: #292929;
+    color: var(--color-text);
 }
 
 /* 排序下拉菜单 */
@@ -166,14 +170,14 @@ function selectSort(option: SortOption) {
     position: absolute;
     top: 60px;
     left: 0;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--color-surface);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border-radius: 15px;
     padding: 10px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--color-shadow);
+    border: 1px solid var(--color-border);
     min-width: 150px;
-    //transform: skew(19deg);
 }
 
 .sort-option {
@@ -184,28 +188,33 @@ function selectSort(option: SortOption) {
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
-    transform: skew(-19deg);
 }
 
 .sort-option:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--color-primary);
+    opacity: 0.3;
 }
 
 .sort-option.is-active {
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--color-primary);
+}
+
+.sort-option.is-active .option-icon,
+.sort-option.is-active .option-label {
+    color: var(--color-bg);
 }
 
 .option-icon {
     font-size: 16px;
     font-weight: bold;
-    color: #292929;
+    color: var(--color-text);
     width: 20px;
     text-align: center;
 }
 
 .option-label {
     font-size: 14px;
-    color: #292929;
+    color: var(--color-text);
     font-weight: 500;
 }
 
@@ -218,13 +227,13 @@ function selectSort(option: SortOption) {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
-    transform: /*skew(19deg)*/ translateY(-10px);
+    transform: translateY(-10px);
 }
 
 /* 响应式设计 */
 @media (max-width: 1024px) {
     .filter-panel {
-        left: 2vw;
+        left: 24px;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -237,18 +246,30 @@ function selectSort(option: SortOption) {
 
 @media (max-width: 768px) {
     .filter-panel {
-        left: 50%;
-        transform: skew(-19deg) translateX(-50%);
+        top: 16px;
+        left: 16px;
+        right: 16px;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 
-    .search-wrapper,
-    .sort-button {
-        height: 45px;
+    .search-wrapper {
+        flex: 1;
+        min-width: 120px;
     }
 
     .search-input {
-        width: 200px;
-        font-size: 14px;
+        width: 100%;
+        font-size: 13px;
+    }
+
+    .sort-button {
+        height: 40px;
+        padding: 0 14px;
+    }
+
+    .sort-label {
+        display: none;
     }
 }
 </style>

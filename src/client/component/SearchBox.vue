@@ -43,17 +43,18 @@ defineExpose({ show, hide })
 .search-box {
   position: absolute;
   top: 1vh;
-  left: calc(50vw - 200px);
+  right: calc(50vw - 200px);
   width: 400px;
-  //transform: skew(-19deg);
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-surface);
   padding: 0 20px;
   display: flex;
   align-items: center;
   border-radius: 30px;
+  border: 1px solid var(--color-border);
   backdrop-filter: blur(6px);
   z-index: 5;
   height: 60px;
+  box-shadow: var(--color-shadow);
 }
 
 .search-input {
@@ -63,24 +64,24 @@ defineExpose({ show, hide })
   border: none;
   outline: none;
   background: transparent;
-  color: white;
+  color: var(--color-text);
 }
 
 .search-input::placeholder {
-  color: rgba(145, 145, 145, 0.6);
+  color: var(--color-textSecondary);
 }
 
 .search-btn {
   padding: 10px;
   font-size: 28px;
-  color: white;
+  color: var(--color-text);
   margin-left: 10px;
   cursor: pointer;
 }
 
 .close-btn {
   font-size: 28px;
-  color: white;
+  color: var(--color-text);
   margin-left: 15px;
   cursor: pointer;
 }
