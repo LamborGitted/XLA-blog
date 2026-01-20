@@ -1,5 +1,5 @@
 {
-  "name": "lantxx-xl-page",
+  "name": "xl-blog",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,17 +14,17 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "element-plus": "^2.13.1",
-    "gray-matter": "^4.0.3",
-    "markdown-it-container": "^4.0.0",
-    "markdown-it-copy": "^1.2.0",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0",
+    "marked": "^17.0.1",
     "shiki": "^3.21.0",
-    "vite-plugin-md": "^0.22.5",
+    "vite-plugin-md": "^0.21.5",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^24.10.4",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/tsconfig": "^0.8.1",

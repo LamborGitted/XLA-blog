@@ -6,8 +6,6 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import Markdown from 'vite-plugin-md'
 import { createHighlighter } from 'shiki'
 
-
-
 // https://vite.dev/config/
 export default defineConfig(async () => {
   const highlighter = await createHighlighter({
