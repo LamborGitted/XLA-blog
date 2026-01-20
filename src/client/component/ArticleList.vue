@@ -34,7 +34,7 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   padding: 30px;
   width: 20vw;
   height: 100vh;
-  left: 8vw;
+  left: 10vw;
   transform: skew(-19deg);
   z-index: 1;
 

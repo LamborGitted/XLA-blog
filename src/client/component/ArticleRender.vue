@@ -5,7 +5,7 @@ import { useArticleCard } from '@/client/composables/useArticleDetail'
 
 // 使用父组件提供的状态
 const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
-const { currentArticle, selectedIndex } = articleListState
+const { currentArticle, selectedIndex, prevArticle, nextArticle, goPrev, goNext } = articleListState
 
 // 组件状态
 const visible = ref(false)
@@ -83,6 +83,33 @@ defineExpose({ show, hide })
                         class="article-content markdown-body"
                         v-html="articleDetail?.htmlContent"
                     />
+
+                    <!-- 上一篇/下一篇导航 -->
+                    <div class="article-navigation">
+                        <button
+                            v-if="prevArticle"
+                            class="nav-button nav-button-prev"
+                            @click="goPrev"
+                        >
+                            <span class="nav-arrow">←</span>
+                            <div class="nav-content">
+                                <span class="nav-label">上一篇</span>
+                                <span class="nav-title">{{ prevArticle.title }}</span>
+                            </div>
+                        </button>
+
+                        <button
+                            v-if="nextArticle"
+                            class="nav-button nav-button-next"
+                            @click="goNext"
+                        >
+                            <div class="nav-content">
+                                <span class="nav-label">下一篇</span>
+                                <span class="nav-title">{{ nextArticle.title }}</span>
+                            </div>
+                            <span class="nav-arrow">→</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -371,6 +398,86 @@ defineExpose({ show, hide })
     background: rgba(0, 0, 0, 0.02);
 }
 
+/* ==================== 文章导航样式 ==================== */
+.article-navigation {
+    display: flex;
+    gap: 20px;
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.nav-button:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button:active {
+    transform: translateY(0);
+}
+
+.nav-button-prev {
+    flex-direction: row;
+}
+
+.nav-button-next {
+    flex-direction: row-reverse;
+}
+
+.nav-arrow {
+    font-size: 24px;
+    color: #333;
+    flex-shrink: 0;
+}
+
+.nav-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.nav-label {
+    font-size: 12px;
+    color: #999;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-title {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-button-next .nav-content {
+    align-items: flex-end;
+    text-align: right;
+}
+
 /* ==================== 动画效果 ==================== */
 
 /* 从下往上弹出 + 淡入淡出组合动画 */
@@ -424,6 +531,23 @@ defineExpose({ show, hide })
 
     .close-icon {
         font-size: 28px;
+    }
+
+    .article-navigation {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .nav-button {
+        padding: 15px;
+    }
+
+    .nav-arrow {
+        font-size: 20px;
+    }
+
+    .nav-title {
+        font-size: 13px;
     }
 }
 
