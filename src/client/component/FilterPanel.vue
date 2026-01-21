@@ -178,6 +178,7 @@ function selectSort(option: SortOption) {
     box-shadow: var(--color-shadow);
     border: 1px solid var(--color-border);
     min-width: 150px;
+  z-index: 11;
 }
 
 .sort-option {
@@ -231,9 +232,17 @@ function selectSort(option: SortOption) {
 }
 
 /* 响应式设计 */
+@media (max-width: 1200px) {
+    .filter-panel {
+        left: 50%;
+        transform: translate(-50%);
+    }
+}
+
 @media (max-width: 1024px) {
     .filter-panel {
         left: 24px;
+        transform: none;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -251,6 +260,7 @@ function selectSort(option: SortOption) {
         right: 16px;
         flex-direction: row;
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     .search-wrapper {
@@ -270,6 +280,28 @@ function selectSort(option: SortOption) {
 
     .sort-label {
         display: none;
+    }
+
+    .sort-menu {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-panel {
+        top: 12px;
+        gap: 8px;
+    }
+
+    .search-wrapper {
+        height: 38px;
+        padding: 0 12px;
+    }
+
+    .sort-button {
+        height: 38px;
+        padding: 0 12px;
     }
 }
 </style>

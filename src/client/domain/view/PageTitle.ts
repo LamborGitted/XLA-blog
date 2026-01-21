@@ -81,7 +81,7 @@ const DEFAULT_TYPEWRITER: TypewriterConfig = {
 export const DEFAULT_PAGE_TITLE: PageTitleConfig = {
   title: {
     id: 'main-title',
-    text: 'XL-Blog',
+    text: 'XLA-Blog',
     visible: true,
     animated: true,
     font: DEFAULT_FONT,
@@ -147,6 +147,7 @@ export function applyFontPreset(config: PageTitleConfig, preset: keyof typeof FO
       font: {
         ...fontPreset.title,
         family: fontPreset.family,
+        lineHeight: '1.2',
       },
     },
     subtitle: config.subtitle ? {
@@ -154,7 +155,16 @@ export function applyFontPreset(config: PageTitleConfig, preset: keyof typeof FO
       font: {
         ...fontPreset.subtitle,
         family: fontPreset.family,
+        lineHeight: '1.5',
       },
-    } : undefined,
+    } : {
+      id: 'subtitle',
+      text: '',
+      font: {
+        ...fontPreset.subtitle,
+        family: fontPreset.family,
+        lineHeight: '1.5',
+      },
+    },
   };
 }

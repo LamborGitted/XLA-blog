@@ -21,14 +21,15 @@ const OVERSCAN = 10 // 预渲染的额外项数
 // 响应式窗口高度
 const windowHeight = ref(window.innerHeight)
 
-// 居中偏移：第一个 item 略在中线往上
-const centerOffset = computed(() => windowHeight.value / 2 - ITEM_HEIGHT * 1.5)
+// 居中偏移：第一个 item 的中心在窗口高度的一半
+const centerOffset = computed(() => windowHeight.value / 2 - ITEM_HEIGHT / 2)
 
 const {
   visibleItems,
   totalHeight,
   offsetY,
-  handleScroll
+  handleScroll,
+  scrollTop
 } = useVirtualScroll(filteredArticles, {
   containerHeight: windowHeight,
   itemHeight: ITEM_HEIGHT,
@@ -42,7 +43,7 @@ const actualOffsetY = computed(() => centerOffset.value - offsetY.value)
 // = totalHeight + 顶部空间(centerOffset) + 底部额外空间
 const spacerHeight = computed(() => {
   // 底部空间：让最后一个item能到达 windowHeight/2 + ITEM_HEIGHT
-  const bottomSpace = windowHeight.value / 2 + ITEM_HEIGHT *4
+  const bottomSpace = windowHeight.value / 2 + ITEM_HEIGHT *1.6
   return totalHeight.value + centerOffset.value + bottomSpace
 })
 
@@ -55,11 +56,11 @@ const pathToIndexMap = computed(() => {
   return map
 })
 
-// 初始化滚动到居中位置
+// 初始化：不要设置 scrollTop，保持为 0，让第一个 item 在中心
 onMounted(() => {
-  if (rowRef.value) {
-    rowRef.value.scrollTop = centerOffset.value
-  }
+  // scrollTop 保持为 0，这样 offsetY = 0，actualOffsetY = centerOffset
+  // 第一个 item 会在窗口中心
+
   // 监听窗口大小变化
   window.addEventListener('resize', handleResize)
 })
@@ -70,6 +71,7 @@ onUnmounted(() => {
 
 function handleResize() {
   windowHeight.value = window.innerHeight
+  // centerOffset 会自动重新计算
 }
 </script>
 
@@ -105,6 +107,8 @@ function handleResize() {
   position: absolute;
   padding: 30px;
   width: 20vw;
+  min-width: 250px;
+  max-width: 320px;
   height: 100vh;
   left: 10vw;
   transform: skew(-19deg);
@@ -114,6 +118,45 @@ function handleResize() {
   background: var(--color-surfaceBlur);
   backdrop-filter: blur(6px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+
+/* 大屏优化 */
+@media (min-width: 1600px) {
+  .article-list {
+    width: 18vw;
+    max-width: 360px;
+  }
+}
+
+/* 平板优化 */
+@media (max-width: 1024px) {
+  .article-list {
+    width: 28vw;
+    left: 5vw;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .article-list {
+    width: calc(100% - 32px);
+    max-width: none;
+    min-width: auto;
+    left: 16px;
+    right: 16px;
+    padding: 15px;
+    transform: skew(-10deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .article-list {
+    width: calc(100% - 16px);
+    left: 8px;
+    right: 8px;
+    padding: 12px;
+    transform: none;
+  }
 }
 
 .row {

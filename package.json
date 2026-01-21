@@ -1,5 +1,5 @@
 {
-  "name": "xl-blog",
+  "name": "xla-blog",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -34,3 +34,4 @@
     "vue-tsc": "^3.2.2"
   }
 }
+

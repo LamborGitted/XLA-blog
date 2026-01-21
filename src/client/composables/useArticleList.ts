@@ -51,9 +51,17 @@ export function useArticleList() {
 
         switch (sortOption) {
             case 'date-desc':
-                return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                return sorted.sort((a, b) => {
+                    const aTime = a.date ? new Date(a.date).getTime() : 0
+                    const bTime = b.date ? new Date(b.date).getTime() : 0
+                    return bTime - aTime
+                })
             case 'date-asc':
-                return sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                return sorted.sort((a, b) => {
+                    const aTime = a.date ? new Date(a.date).getTime() : 0
+                    const bTime = b.date ? new Date(b.date).getTime() : 0
+                    return aTime - bTime
+                })
             case 'title-asc':
                 return sorted.sort((a, b) => a.title.localeCompare(b.title, 'zh-CN'))
             case 'title-desc':
@@ -116,7 +124,10 @@ export function useArticleList() {
     function cycleSort() {
         const currentIndex = SORT_OPTIONS.findIndex(opt => opt.value === sortBy.value)
         const nextIndex = (currentIndex + 1) % SORT_OPTIONS.length
-        setSort(SORT_OPTIONS[nextIndex].value)
+        const nextOption = SORT_OPTIONS[nextIndex]
+        if (nextOption) {
+            setSort(nextOption.value)
+        }
     }
 
     // --- 上一篇/下一篇文章

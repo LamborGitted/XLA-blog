@@ -12,6 +12,7 @@ const visible = ref(false)
 
 // 创建响应式文章对象供 useArticleCard 使用
 const articleProxy = reactive({
+    id: '',
     title: '',
     path: '',
     content: '',
@@ -570,6 +571,12 @@ defineExpose({ show, hide })
 }
 
 /* ==================== 响应式设计 ==================== */
+@media (max-width: 1200px) {
+    .article-render-container {
+        max-width: 800px;
+    }
+}
+
 @media (max-width: 768px) {
     .article-render-container {
         height: 90vh;

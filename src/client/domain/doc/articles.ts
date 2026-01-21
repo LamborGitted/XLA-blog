@@ -1,6 +1,6 @@
 /**
  * FrontMatter 元数据
- * 支持 markdown 文件的 YAML front matter
+ * 支持 Markdown 文件的 YAML front matter
  */
 export interface ArticleFrontMatter {
   title?: string

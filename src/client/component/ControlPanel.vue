@@ -59,14 +59,36 @@ const panelConfig = computed(() => DEFAULT_CONTROL_PANEL)
 }
 
 /* 响应式设计 */
+@media (max-width: 1200px) {
+  .control-panel {
+    right: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .control-panel {
     right: 16px;
     gap: 16px;
+    top: auto;
+    bottom: 16px;
+    transform: none;
   }
 
   .control-group {
     padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .control-panel {
+    right: 12px;
+    bottom: 12px;
+    gap: 12px;
+  }
+
+  .control-group {
+    padding: 10px;
+    border-radius: 28px;
   }
 }
 </style>

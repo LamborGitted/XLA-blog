@@ -4,8 +4,8 @@ import { useColorUtils } from '@/client/composables/useColorUtils'
 import { useTheme } from '@/client/composables/useTheme'
 
 const props = defineProps<{
-  localHue: Ref<number>
-  sliderPercent: Ref<number>
+  localHue: number
+  sliderPercent: number
 }>()
 
 const emit = defineEmits<{
@@ -17,7 +17,7 @@ const { currentConfig } = useTheme()
 const { sliderBackground } = useColorUtils(currentConfig)
 
 const thumbColor = computed(() => {
-  const degrees = Math.round((props.localHue.value / 255) * 360)
+  const degrees = Math.round((props.localHue / 255) * 360)
   return `hsl(${degrees}, 100%, 50%)`
 })
 </script>

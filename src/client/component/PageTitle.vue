@@ -135,6 +135,16 @@ const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter
 }
 
 /* 响应式设计 */
+@media (max-width: 1200px) {
+  .page-title {
+    font-size: 4rem !important;
+  }
+
+  .page-subtitle {
+    font-size: 1.6rem !important;
+  }
+}
+
 @media (max-width: 768px) {
   .page-title {
     font-size: 2.5rem !important;
@@ -148,11 +158,12 @@ const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter
 
 @media (max-width: 480px) {
   .page-title {
-    font-size: 2rem !important;
+    font-size: 1.8rem !important;
   }
 
   .page-subtitle {
     font-size: 1rem !important;
+    margin-top: 8px;
   }
 }
 </style>
