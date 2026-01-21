@@ -7,7 +7,7 @@ export function useBackground(intervalMs = 10000) {
     let timer: number | null = null
 
     const next = () => {
-        currentIndex.value = (currentIndex.value + 1)
+        currentIndex.value = (currentIndex.value + 1) % backgrounds.length
         currentBg.value = backgrounds[currentIndex.value]
     }
 
