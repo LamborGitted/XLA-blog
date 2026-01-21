@@ -1,30 +1,102 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { inject, onMounted, onUnmounted, ref, computed } from 'vue'
 import type { useArticleList } from '@/client/composables/useArticleList'
+import { useVirtualScroll } from '@/client/composables/useVirtualScroll'
 
-// 使用父组件提供的状态
-const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
+// 使用父组件提供的状态，添加错误处理
+const articleListState = inject<ReturnType<typeof useArticleList> | null>('articleListState', null)
+
+if (!articleListState) {
+  console.error('ArticleList: articleListState not provided. Make sure to provide it from parent component.')
+  throw new Error('articleListState is required but not provided')
+}
+
 const { filteredArticles, selectedIndex, selectByIndex } = articleListState
+const rowRef = ref<HTMLElement | null>(null)
 
+// 使用虚拟滚动
+const ITEM_HEIGHT = 51 // 15px padding * 2 + 20px margin + 文本高度约 1px
+const OVERSCAN = 10 // 预渲染的额外项数
 
+// 响应式窗口高度
+const windowHeight = ref(window.innerHeight)
+
+// 居中偏移：第一个 item 略在中线往上
+const centerOffset = computed(() => windowHeight.value / 2 - ITEM_HEIGHT * 1.5)
+
+const {
+  visibleItems,
+  totalHeight,
+  offsetY,
+  handleScroll
+} = useVirtualScroll(filteredArticles, {
+  containerHeight: windowHeight,
+  itemHeight: ITEM_HEIGHT,
+  overscan: OVERSCAN
+})
+
+// 实际的偏移量：初始略在中线上方，随滚动向下移动
+const actualOffsetY = computed(() => centerOffset.value - offsetY.value)
+
+// spacer 高度：让最后一个 item 能到中线往下一个身位
+// = totalHeight + 顶部空间(centerOffset) + 底部额外空间
+const spacerHeight = computed(() => {
+  // 底部空间：让最后一个item能到达 windowHeight/2 + ITEM_HEIGHT
+  const bottomSpace = windowHeight.value / 2 + ITEM_HEIGHT *4
+  return totalHeight.value + centerOffset.value + bottomSpace
+})
+
+// 构建路径到索引的映射，避免重复 findIndex
+const pathToIndexMap = computed(() => {
+  const map = new Map<string, number>()
+  filteredArticles.value.forEach((article, index) => {
+    map.set(article.path, index)
+  })
+  return map
+})
+
+// 初始化滚动到居中位置
+onMounted(() => {
+  if (rowRef.value) {
+    rowRef.value.scrollTop = centerOffset.value
+  }
+  // 监听窗口大小变化
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+function handleResize() {
+  windowHeight.value = window.innerHeight
+}
 </script>
 
 <template>
   <div class="article-list">
+    <div
+      ref="rowRef"
+      class="row"
+      @scroll="handleScroll"
+    >
+      <!-- 占位容器，撑开滚动高度 -->
+      <div class="spacer" :style="{ height: `${spacerHeight}px` }"></div>
 
-    <div class="row">
-      <div
-        v-for="(item, i) in filteredArticles"
-        :key="item.path"
-        class="article-item"
-        :class="{ 'is-selected': i === selectedIndex }"
-        @click="selectByIndex(i)"
-       >
-        <div class="title">{{item.title}}</div>
-        <div v-if="item.subtitle" class="subtitle">{{item.subtitle}}</div>
+      <!-- 可见项列表 -->
+      <div class="items" :style="{ transform: `translateY(${actualOffsetY}px)` }">
+        <div
+          v-for="item in visibleItems"
+          :key="item.path"
+          class="article-item"
+          :class="{ 'is-selected': pathToIndexMap.get(item.path) === selectedIndex }"
+          @click="selectByIndex(pathToIndexMap.get(item.path)!)"
+        >
+          <div class="title">{{ item.title }}</div>
+          <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>
+        </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -42,10 +114,9 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   background: var(--color-surfaceBlur);
   backdrop-filter: blur(6px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
-
-  /* border-radius: 30px; */
 }
-.row{
+
+.row {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -59,14 +130,8 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   scroll-behavior: smooth;
   overscroll-behavior: contain;
 
-  padding-top: calc(50vh - 20px);
-  padding-bottom: calc(50vh - 20px);
-
   perspective: 800px;
-  //cursor: grab;
   user-select: none;
-  gap: 10px;
-
 }
 
 /* WebKit browsers: hide scrollbar visually but keep scroll functionality */
@@ -78,8 +143,23 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   background: transparent;
 }
 
+.spacer {
+  position: absolute;
+  width: 1px;
+  left: 0;
+  top: 0;
+}
+
+.items {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
 .article-item {
-  padding:15px 0px 15px 15px;
+  padding: 15px 0px 15px 15px;
   margin-bottom: 20px;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -113,5 +193,4 @@ const { filteredArticles, selectedIndex, selectByIndex } = articleListState
   color: var(--color-primary);
   font-weight: 400;
 }
-
 </style>

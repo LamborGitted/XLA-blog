@@ -1,18 +1,36 @@
+/**
+ * FrontMatter 元数据
+ * 支持 markdown 文件的 YAML front matter
+ */
+export interface ArticleFrontMatter {
+  title?: string
+  subtitle?: string
+  date?: string
+  tags?: string[]
+  author?: string
+  description?: string
+  category?: string
+  draft?: boolean
+  [key: string]: string | string[] | boolean | undefined
+}
+
+/**
+ * 文章元数据
+ */
 export interface ArticleMeta {
+  id: string
 
-    id: string
+  title: string
 
-    title: string
+  subtitle?: string
 
-    subtitle?: string
+  date?: string
 
-    date?: string
+  tags?: string[]
 
-    tags?: string[]
+  content: string
 
-    content: string
+  path: string
 
-    path: string
-
-    meta?: Record<string, any>
+  meta?: ArticleFrontMatter
 }

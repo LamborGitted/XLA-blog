@@ -14,9 +14,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.0",
-    "marked": "^17.0.1",
     "shiki": "^3.21.0",
     "vite-plugin-md": "^0.21.5",
     "vue": "^3.5.26",

@@ -10,7 +10,7 @@
   >
     <!-- Icon 模式 -->
     <span v-if="variant === 'icon'" class="glass-icon">
-      <slot name="icon" />
+      <slot />
     </span>
 
     <!-- 通用按钮 -->
