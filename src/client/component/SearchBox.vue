@@ -35,7 +35,7 @@ defineExpose({ show, hide })
         placeholder="输入关键字搜索"
         @keyup.enter="onSearch"
     />
-    <div class="close-btn" @click="hide">×</div>
+    <div class="close-btn" @click"hide">×</div>
   </div>
 </template>
 

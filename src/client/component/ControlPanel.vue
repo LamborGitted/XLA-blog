@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, h } from 'vue'
 import { useTheme } from '@/client/composables/useTheme'
 import GlassButton from '@/client/component/GlassButton.vue'
-import SunIcon from '@/client/component/icon/SunIcon.vue'
-import MoonIcon from '@/client/component/icon/MoonIcon.vue'
-import PaletteIcon from '@/client/component/icon/PaletteIcon.vue'
 import {
   DEFAULT_CONTROL_PANEL,
   ControlItemType,
-  getIcon,
   type ControlItem
 } from '@/client/domain/controlPanel/controlPanel'
 
@@ -25,7 +21,37 @@ let closeTimer: ReturnType<typeof setTimeout> | null = null
 
 // 根据当前模式选择图标
 const currentIcon = computed(() => {
-  return currentConfig.value.mode === 'light' ? SunIcon : MoonIcon
+  const sunIcon = h('svg', {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    'stroke-width': '2',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round'
+  }, [
+    h('circle', { cx: '12', cy: '12', r: '5' }),
+    h('line', { x1: '12', y1: '1', x2: '12', y2: '3' }),
+    h('line', { x1: '12', y1: '21', x2: '12', y2: '23' }),
+    h('line', { x1: '4.22', y1: '4.22', x2: '5.64', y2: '5.64' }),
+    h('line', { x1: '18.36', y1: '18.36', x2: '19.78', y2: '19.78' }),
+    h('line', { x1: '1', y1: '12', x2: '3', y2: '12' }),
+    h('line', { x1: '21', y1: '12', x2: '23', y2: '12' }),
+    h('line', { x1: '4.22', y1: '19.78', x2: '5.64', y2: '18.36' }),
+    h('line', { x1: '18.36', y1: '5.64', x2: '19.78', y2: '4.22' })
+  ])
+
+  const moonIcon = h('svg', {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    'stroke-width': '2',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round'
+  }, [
+    h('path', { d: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' })
+  ])
+
+  return currentConfig.value.mode === 'light' ? sunIcon : moonIcon
 })
 
 // 当前主题色
@@ -136,6 +162,37 @@ const handleItemClick = (item: ControlItem) => {
 const getNavInitial = (text: string): string => {
   return text.charAt(0)
 }
+
+// 渲染 SVG 图标
+const renderIcon = (iconName: string) => {
+  const icons: Record<string, any> = {
+    palette: h('svg', {
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': '2',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round'
+    }, [
+      h('circle', { cx: '13.5', cy: '6.5', r: '.5', fill: 'currentColor' }),
+      h('circle', { cx: '17.5', cy: '10.5', r: '.5', fill: 'currentColor' }),
+      h('circle', { cx: '8.5', cy: '7.5', r: '.5', fill: 'currentColor' }),
+      h('circle', { cx: '6.5', cy: '12.5', r: '.5', fill: 'currentColor' }),
+      h('path', { d: 'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z' })
+    ]),
+    github: h('svg', {
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': '2',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round'
+    }, [
+      h('path', { d: 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1 5.09a5.07 5.07 0 0 0 5.09 1.09 5.44 5.44 0 0 0 3.5 8c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 15 16.16V19' })
+    ])
+  }
+  return icons[iconName]
+}
 </script>
 
 <template>
@@ -171,7 +228,7 @@ const getNavInitial = (text: string): string => {
         >
           <GlassButton variant="icon" :title="item.title || '选择主题色'">
             <div class="palette-icon-wrapper">
-              <PaletteIcon />
+              <component :is="renderIcon('palette')" />
               <div class="color-bg" :style="{ backgroundColor: currentColor }"></div>
             </div>
           </GlassButton>
@@ -210,7 +267,7 @@ const getNavInitial = (text: string): string => {
           class="control-item"
         >
           <GlassButton variant="icon" :title="item.title || item.label" @click="handleItemClick(item)">
-            <span v-if="item.icon && getIcon(item.icon)" v-html="getIcon(item.icon)"></span>
+            <component :is="renderIcon(item.icon)" v-if="item.icon && renderIcon(item.icon)" />
             <span v-else>{{ item.label?.charAt(0) || '?' }}</span>
           </GlassButton>
         </div>
@@ -231,7 +288,7 @@ const getNavInitial = (text: string): string => {
           class="control-item"
         >
           <GlassButton variant="icon" :title="item.title || item.label" @click="handleItemClick(item)">
-            <span v-if="item.icon && getIcon(item.icon)" v-html="getIcon(item.icon)"></span>
+            <component :is="renderIcon(item.icon)" v-if="item.icon && renderIcon(item.icon)" />
             <span v-else>{{ item.label?.charAt(0) || '?' }}</span>
           </GlassButton>
         </div>

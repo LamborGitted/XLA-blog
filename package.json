@@ -20,6 +20,7 @@
     "shiki": "^3.21.0",
     "vite-plugin-md": "^0.21.5",
     "vue": "^3.5.26",
+    "vue-icons-plus": "^0.1.8",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
