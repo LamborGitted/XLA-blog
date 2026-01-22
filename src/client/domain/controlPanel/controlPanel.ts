@@ -1,4 +1,5 @@
 // src/client/domain/controlPanel/controlPanel.ts
+import { useProfile } from '@/client/composables/useProfile'
 
 
 /**
@@ -75,6 +76,17 @@ export const DEFAULT_CONTROL_PANEL: ControlPanelConfig = {
         {
           id: 'divider-1',
           type: ControlItemType.DIVIDER,
+        },
+        {
+          id: 'profile',
+          type: ControlItemType.BUTTON,
+          icon: 'person',
+          label: 'Profile',
+          title: '个人简介',
+          action: () => {
+            const { showProfileCard } = useProfile()
+            showProfileCard()
+          },
         },
         {
           id: 'github',

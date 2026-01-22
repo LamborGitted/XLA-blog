@@ -19,7 +19,7 @@ const getNavInitial = (text: string): string => {
 // 获取图标
 const iconComponent = computed(() => {
   if (!props.item.icon) return null
-  return useGetIcon(props.item.icon as 'sun' | 'moon' | 'palette' | 'github')
+  return useGetIcon(props.item.icon as 'sun' | 'moon' | 'palette' | 'github' | 'person')
 })
 
 // 处理控制项点击

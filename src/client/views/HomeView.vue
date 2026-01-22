@@ -6,6 +6,7 @@ import ArticleRender from "@/client/component/ArticleRender.vue";
 import FilterPanel from "@/client/component/FilterPanel.vue";
 import ControlPanel from "@/client/component/ControlPanel.vue";
 import PageTitle from "@/client/component/PageTitle.vue";
+import ProfileCard from "@/client/component/ProfileCard.vue";
 import { useArticleList } from '@/client/composables/useArticleList'
 
 // 创建单例的 articleList 状态
@@ -26,6 +27,7 @@ provide('articleListState', articleListState)
       <BackgroundSwitcher/>
       <ArticleRender />
       <ControlPanel />
+      <ProfileCard />
   </div>
 </template>
 
