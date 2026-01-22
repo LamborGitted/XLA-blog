@@ -1,4 +1,5 @@
 import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
 import { createHighlighter } from 'shiki'
 
 // 单例高亮器
@@ -95,11 +96,38 @@ class MarkdownRenderer {
     }
 
     /**
-     * 渲染 Markdown 为 HTML
+     * 渲染 Markdown 为 HTML（带 XSS 防护）
      */
     static async render(markdown: string): Promise<string> {
         const md = await this.getInstance()
-        return md.render(markdown)
+        const rawHtml = md.render(markdown)
+
+        // 使用 DOMPurify 清理 HTML，防止 XSS 攻击
+        const cleanHtml = DOMPurify.sanitize(rawHtml, {
+            // 允许的标签白名单
+            ALLOWED_TAGS: [
+                'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                'p', 'br', 'hr',
+                'ul', 'ol', 'li',
+                'strong', 'b', 'em', 'i', 'code', 'pre',
+                'a', 'img',
+                'blockquote',
+                'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                'div', 'span', 'del', 's', 'sub', 'sup'
+            ],
+            // 允许的属性白名单
+            // 注意：style 属性是必须的，Shiki 代码高亮依赖它
+            ALLOWED_ATTR: [
+                'href', 'src', 'alt', 'title', 'class',
+                'id', 'width', 'height', 'target', 'rel', 'style'
+            ],
+            // 允许的 URI 协议（防止 javascript: 等危险协议）
+            ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+            // 强制外部链接添加 rel="noopener noreferrer"
+            ADD_ATTR: ['rel']
+        })
+
+        return cleanHtml
     }
 }
 

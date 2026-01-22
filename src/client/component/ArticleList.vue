@@ -112,7 +112,7 @@ function handleResize() {
   height: 100vh;
   left: 10vw;
   transform: skew(-19deg);
-  z-index: 1;
+  z-index: 6;
 
   /* 默认模糊背景 */
   background: var(--color-surfaceBlur);

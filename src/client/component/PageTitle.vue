@@ -84,7 +84,7 @@ const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter
 .page-title-container {
   position: fixed;
   top: 50%;
-  left: 50%;
+  left: 60%;
   transform: translate(-50%, -50%);
   z-index: 5;
   text-align: center;
