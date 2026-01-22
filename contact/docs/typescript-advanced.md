@@ -3,7 +3,7 @@ subtitle:  TypeScript 高级技巧
 date:  2026-01-16
 ---
 
-# TypeScript 高级技巧与最佳实践
+# TypeScript 高级技巧与最佳实践(测试文档)
 
 > 从入门到精通，写出更优雅的类型安全代码
 

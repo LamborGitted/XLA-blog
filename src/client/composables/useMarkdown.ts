@@ -5,7 +5,7 @@ import type { ArticleMeta } from '@/client/domain/doc/articles.ts'
  * 读取 contact/docs 下所有 markdown 文件
  */
 const modules = import.meta.glob(
-    '../../../contact/docs/**/*.md',
+    '@docs/**/*.md',
     { as: 'raw', eager: true }
 )
 
