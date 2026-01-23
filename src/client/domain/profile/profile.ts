@@ -25,15 +25,16 @@ export interface Profile {
  * 默认个人简介数据
  */
 export const DEFAULT_PROFILE: Profile = {
-  name: 'XL',
+  name: 'Lantxx',
   title: '全栈开发者',
   bio: '热爱技术，专注于前端开发与用户体验设计。喜欢探索新技术，分享开发经验。',
   skills: [
-    'Vue.js / React',
+    'Vue.js',
     'TypeScript',
     'Node.js',
-    'Python',
-    'UI/UX Design'
+    'UI/UX Design',
+    'Qt/C++'
+
   ],
   social: [
     {
@@ -43,7 +44,7 @@ export const DEFAULT_PROFILE: Profile = {
     },
     {
       name: 'Email',
-      url: 'mailto:your-email@example.com',
+      url: 'lambor.lambda@gmail.com',
       icon: 'envelope'
     }
   ],
