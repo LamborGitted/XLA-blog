@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useGithubStats } from '@/client/composables/useGithubStats'
+import { WidgetType } from '@/client/domain/widgets/widgets'
 import type { GithubReposWidgetConfig } from '@/client/domain/widgets/widgets'
 
 interface Props {
@@ -18,8 +19,11 @@ const {
 } = useGithubStats(props.config)
 
 const config: GithubReposWidgetConfig = {
-  showStars: props.config?.showStars || false,
-  showForks: props.config?.showForks || false,
+  type: WidgetType.GithubRepos,
+  enabled: true,
+  order: 4,
+  showStars: props.config?.showStars ?? false,
+  showForks: props.config?.showForks ?? false,
 }
 </script>
 

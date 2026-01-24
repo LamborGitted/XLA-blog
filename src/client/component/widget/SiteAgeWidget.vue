@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { getSiteAgeDetails } from '@/client/domain/widgets/siteInfo'
+import { WidgetType } from '@/client/domain/widgets/widgets'
 import type { SiteAgeWidgetConfig } from '@/client/domain/widgets/widgets'
 
 interface Props {
@@ -10,7 +11,10 @@ interface Props {
 const props = defineProps<Props>()
 
 const config: SiteAgeWidgetConfig = {
-  format: props.config?.format || 'text',
+  type: WidgetType.SiteAge,
+  enabled: true,
+  order: 3,
+  format: props.config?.format ?? 'text',
 }
 
 // 站点时长信息

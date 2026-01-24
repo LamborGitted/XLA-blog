@@ -1,7 +1,8 @@
 // src/client/composables/useWidgetClock.ts
 
 import { ref, computed, onUnmounted, watch } from 'vue'
-import type { ClockWidgetConfig, ClockRefreshMode } from '@/client/domain/widgets/widgets'
+import { ClockRefreshMode } from '@/client/domain/widgets/widgets'
+import type { ClockWidgetConfig } from '@/client/domain/widgets/widgets'
 
 /**
  * 时钟时间信息
@@ -49,10 +50,13 @@ export function useWidgetClock(config?: Partial<ClockWidgetConfig>) {
 
   // 合并配置
   const clockConfig: ClockWidgetConfig = {
-    refreshMode: config?.refreshMode || 'seconds',
-    showDate: config?.showDate !== false,
-    showSeconds: config?.showSeconds !== false,
-    format: config?.format || '24h',
+    type: 'clock' as any, // 使用 any 避免循环依赖
+    enabled: true,
+    order: 1,
+    refreshMode: config?.refreshMode ?? ClockRefreshMode.Seconds,
+    showDate: config?.showDate ?? true,
+    showSeconds: config?.showSeconds ?? true,
+    format: config?.format ?? '24h',
   }
 
   // 时间信息
@@ -87,8 +91,8 @@ export function useWidgetClock(config?: Partial<ClockWidgetConfig>) {
       month,
       day,
       weekday,
-      monthName: monthNames[month - 1],
-      weekdayName: weekdayNames[weekday],
+      monthName: monthNames[month - 1] || '',
+      weekdayName: weekdayNames[weekday] || '',
     }
   })
 

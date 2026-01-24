@@ -19,8 +19,11 @@ export function useGithubStats(config?: Partial<GithubReposWidgetConfig>) {
 
   // 合并配置
   const githubConfig: GithubReposWidgetConfig = {
-    showStars: config?.showStars || false,
-    showForks: config?.showForks || false,
+    type: 'github-repos' as any, // 使用 any 避免循环依赖
+    enabled: true,
+    order: 4,
+    showStars: config?.showStars ?? false,
+    showForks: config?.showForks ?? false,
   }
 
   // 公开仓库数量

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getEnabledWidgetConfigs } from '@/client/domain/widgets/widgets'
+import type { ClockWidgetConfig, ArticleCountWidgetConfig, SiteAgeWidgetConfig, GithubReposWidgetConfig } from '@/client/domain/widgets/widgets'
 import ClockWidget from './ClockWidget.vue'
 import ArticleCountWidget from './ArticleCountWidget.vue'
 import SiteAgeWidget from './SiteAgeWidget.vue'
@@ -15,25 +16,25 @@ const widgetConfigs = getEnabledWidgetConfigs()
       <ClockWidget
         v-if="widgetConfigs.find(c => c.type === WidgetType.Clock)"
         :key="WidgetType.Clock"
-        :config="widgetConfigs.find(c => c.type === WidgetType.Clock)"
+        :config="widgetConfigs.find(c => c.type === WidgetType.Clock) as Partial<ClockWidgetConfig>"
         class="widget-item"
       />
       <ArticleCountWidget
         v-if="widgetConfigs.find(c => c.type === WidgetType.ArticleCount)"
         :key="WidgetType.ArticleCount"
-        :config="widgetConfigs.find(c => c.type === WidgetType.ArticleCount)"
+        :config="widgetConfigs.find(c => c.type === WidgetType.ArticleCount) as Partial<ArticleCountWidgetConfig>"
         class="widget-item"
       />
       <SiteAgeWidget
         v-if="widgetConfigs.find(c => c.type === WidgetType.SiteAge)"
         :key="WidgetType.SiteAge"
-        :config="widgetConfigs.find(c => c.type === WidgetType.SiteAge)"
+        :config="widgetConfigs.find(c => c.type === WidgetType.SiteAge) as Partial<SiteAgeWidgetConfig>"
         class="widget-item"
       />
       <GithubReposWidget
         v-if="widgetConfigs.find(c => c.type === WidgetType.GithubRepos)"
         :key="WidgetType.GithubRepos"
-        :config="widgetConfigs.find(c => c.type === WidgetType.GithubRepos)"
+        :config="widgetConfigs.find(c => c.type === WidgetType.GithubRepos) as Partial<GithubReposWidgetConfig>"
         class="widget-item"
       />
     </TransitionGroup>

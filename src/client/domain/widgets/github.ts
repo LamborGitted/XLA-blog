@@ -185,9 +185,12 @@ class GithubManager {
         totalForks: repos.reduce((sum, repo) => sum + repo.forks, 0),
         lastUpdated:
           repos.length > 0
-            ? repos.sort(
-                (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-              )[0].updatedAt
+            ? (() => {
+                const sortedRepos = [...repos].sort(
+                  (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+                )
+                return sortedRepos[0]?.updatedAt || new Date().toISOString()
+              })()
             : new Date().toISOString(),
         isCached: false,
       };

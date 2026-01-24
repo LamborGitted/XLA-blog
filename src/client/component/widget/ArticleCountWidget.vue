@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { inject } from 'vue'
 import type { useArticleList } from '@/client/composables/useArticleList'
+import { WidgetType } from '@/client/domain/widgets/widgets'
 import type { ArticleCountWidgetConfig } from '@/client/domain/widgets/widgets'
 
 interface Props {
@@ -14,7 +15,10 @@ const articleListState = inject<ReturnType<typeof useArticleList>>('articleListS
 const { originalArticles, filteredArticles } = articleListState
 
 const config: ArticleCountWidgetConfig = {
-  showDetails: props.config?.showDetails || false,
+  type: WidgetType.ArticleCount,
+  enabled: true,
+  order: 2,
+  showDetails: props.config?.showDetails ?? false,
 }
 
 const totalCount = computed(() => originalArticles.value.length)

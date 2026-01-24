@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useWidgetClock } from '@/client/composables/useWidgetClock'
+import { WidgetType, ClockRefreshMode } from '@/client/domain/widgets/widgets'
 import type { ClockWidgetConfig } from '@/client/domain/widgets/widgets'
 
 interface Props {
@@ -16,7 +17,15 @@ const {
   getConfig,
 } = useWidgetClock(props.config)
 
-const config = getConfig()
+const config: ClockWidgetConfig = {
+  type: WidgetType.Clock,
+  enabled: true,
+  order: 1,
+  refreshMode: props.config?.refreshMode ?? ClockRefreshMode.Seconds,
+  showDate: props.config?.showDate ?? true,
+  showSeconds: props.config?.showSeconds ?? true,
+  format: props.config?.format ?? '24h',
+}
 </script>
 
 <template>

@@ -68,7 +68,7 @@ useLayoutGesture({
 
 /* PageTitle 位置变换 - 通过 class 平滑过渡 */
 .page-title-container.title-left {
-  left: calc(50%- 100px);
+  left: calc(50% - 100px);
 }
 
 /* ArticleList 滑动动画 */

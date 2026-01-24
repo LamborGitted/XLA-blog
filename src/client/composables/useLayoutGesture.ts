@@ -143,9 +143,10 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
    * 处理触摸开始
    */
   function handleTouchStart(event: TouchEvent) {
-    if (event.touches.length === 1) {
-      touchStartX = event.touches[0].clientX
-      touchStartY = event.touches[0].clientY
+    const touch = event.touches[0]
+    if (touch) {
+      touchStartX = touch.clientX
+      touchStartY = touch.clientY
       isTracking = true
     }
   }
@@ -164,6 +165,8 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
     }
 
     const touch = event.touches[0]
+    if (!touch) return
+
     const deltaX = touchStartX - touch.clientX
     const deltaY = touchStartY - touch.clientY
 
