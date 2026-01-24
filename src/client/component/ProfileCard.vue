@@ -133,7 +133,7 @@ const getSocialIcon = (iconName?: string) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
   z-index: 200;
@@ -179,7 +179,7 @@ const getSocialIcon = (iconName?: string) => {
   border-radius: 50%;
   border: none;
   background: var(--color-muted);
-  opacity: 0.3;
+  opacity: 0.6;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
@@ -192,7 +192,7 @@ const getSocialIcon = (iconName?: string) => {
 
 .close-button:hover {
   background: var(--color-text-secondary);
-  opacity: 0.5;
+  opacity: 1;
   transform: rotate(90deg) scale(1.1);
 }
 
@@ -312,16 +312,16 @@ const getSocialIcon = (iconName?: string) => {
   display: inline-block;
   padding: 6px 12px;
   background: var(--color-muted);
-  opacity: 0.3;
+  opacity: 0.7;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-text);
   font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .skill-tag:hover {
-  opacity: 0.5;
+  opacity: 1;
   transform: translateY(-2px);
 }
 
@@ -336,7 +336,7 @@ const getSocialIcon = (iconName?: string) => {
   height: 40px;
   border-radius: 50%;
   background: var(--color-muted);
-  opacity: 0.3;
+  opacity: 0.7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -368,13 +368,13 @@ const getSocialIcon = (iconName?: string) => {
   gap: 12px;
   padding: 12px;
   background: var(--color-muted);
-  opacity: 0.2;
+  opacity: 0.6;
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .contact-item:hover {
-  opacity: 0.3;
+  opacity: 0.8;
 }
 
 .contact-icon {
@@ -393,15 +393,15 @@ const getSocialIcon = (iconName?: string) => {
 }
 
 .contact-label {
-  font-size: 11px;
-  color: var(--color-muted);
+  font-size: 12px;
+  color: var(--color-text-secondary);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .contact-value {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-text);
   font-weight: 500;
   overflow: hidden;
@@ -410,13 +410,22 @@ const getSocialIcon = (iconName?: string) => {
 }
 
 /* ==================== 动画效果 ==================== */
-/* 从下往上弹出 + 淡入淡出组合动画 */
-.profile-card-enter-active {
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+/* 遮罩层淡入淡出 */
+.profile-card-enter-active .profile-card-overlay {
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.profile-card-leave-active {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.profile-card-leave-active .profile-card-overlay {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* 卡片容器动画：缩放 + 上滑 + 淡入 */
+.profile-card-enter-active .profile-card-container {
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.profile-card-leave-active .profile-card-container {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .profile-card-enter-from {
@@ -424,7 +433,8 @@ const getSocialIcon = (iconName?: string) => {
 }
 
 .profile-card-enter-from .profile-card-container {
-  transform: translateY(100%);
+  transform: translateY(60px) scale(0.9) perspective(1000px) rotateX(10deg);
+  opacity: 0;
 }
 
 .profile-card-leave-to {
@@ -432,7 +442,68 @@ const getSocialIcon = (iconName?: string) => {
 }
 
 .profile-card-leave-to .profile-card-container {
-  transform: translateY(100%);
+  transform: translateY(40px) scale(0.95);
+  opacity: 0;
+}
+
+/* 内部元素错落动画 */
+.profile-card-enter-active .profile-header {
+  animation: slideInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+.profile-card-enter-active .profile-section {
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+.profile-card-enter-active .profile-section:nth-child(2) {
+  animation-delay: 0.25s;
+}
+
+.profile-card-enter-active .profile-section:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.profile-card-enter-active .profile-section:nth-child(4) {
+  animation-delay: 0.35s;
+}
+
+/* 关闭按钮动画 */
+.profile-card-enter-active .close-button {
+  animation: rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+}
+
+/* 关键帧动画 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
 }
 
 /* ==================== 响应式设计 ==================== */

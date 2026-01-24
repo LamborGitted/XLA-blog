@@ -4,6 +4,7 @@ import type { ControlItem } from '@/client/domain/controlPanel/controlPanel'
 import { ControlItemType } from '@/client/domain/controlPanel/controlPanel'
 import { useGetIcon } from '@/client/composables/useIcons'
 import GlassButton from '@/client/component/GlassButton.vue'
+import LayoutTransform from './LayoutTransform.vue'
 import ThemeToggle from './ThemeToggle.vue'
 import ThemeColorPicker from './ThemeColorPicker.vue'
 
@@ -56,6 +57,14 @@ const handleClick = () => {
 <template>
   <!-- 分隔线 -->
   <div v-if="item.type === ControlItemType.DIVIDER && item.visible !== false" class="divider"></div>
+
+  <!-- 布局变换按钮 -->
+  <div
+    v-else-if="item.type === ControlItemType.LAYOUT_TRANSFORM && item.visible !== false"
+    class="control-item"
+  >
+    <LayoutTransform />
+  </div>
 
   <!-- 主题切换按钮 -->
   <div

@@ -7,6 +7,7 @@ import { useProfile } from '@/client/composables/useProfile'
  */
 export enum ControlItemType {
   BUTTON = 'button',           // 普通按钮
+  LAYOUT_TRANSFORM = 'layout-transform', // 布局变换
   THEME_TOGGLE = 'theme-toggle',  // 主题切换
   THEME_COLOR = 'theme-color',    // 主题色选择
   DIVIDER = 'divider',         // 分隔线
@@ -55,6 +56,16 @@ export interface ControlPanelConfig {
 export const DEFAULT_CONTROL_PANEL: ControlPanelConfig = {
   id: 'default',
   sections: [
+    {
+      id: 'layout',
+      items: [
+        {
+          id: 'layout-transform',
+          type: ControlItemType.LAYOUT_TRANSFORM,
+          title: '切换布局',
+        },
+      ],
+    },
     {
       id: 'theme',
       items: [

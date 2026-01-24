@@ -90,6 +90,13 @@ const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter
   text-align: center;
   pointer-events: none;
   user-select: none;
+  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 左侧位置 */
+.page-title-container.title-left {
+  left: 15%;
+  text-align: left;
 }
 
 .page-title {
