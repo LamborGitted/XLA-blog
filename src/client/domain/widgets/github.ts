@@ -48,7 +48,7 @@ export interface GithubStats {
  * 默认 GitHub 配置
  */
 export const DEFAULT_GITHUB_CONFIG: GithubConfig = {
-  username: 'your-github-username', // 需要替换为实际的 GitHub 用户名
+  username: 'LamborGitted', // 需要替换为实际的 GitHub 用户名
   apiBaseUrl: 'https://api.github.com',
   timeout: 10000,
   cacheExpiry: 5 * 60 * 1000, // 5 分钟

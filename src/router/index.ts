@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from "@/client/views/HomeView.vue";
+
+// 使用路由懒加载 - 优化首屏加载性能
+const HomeView = () => import('@/client/views/HomeView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
