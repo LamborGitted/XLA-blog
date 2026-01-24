@@ -57,18 +57,13 @@ export const DEFAULT_CONTROL_PANEL: ControlPanelConfig = {
   id: 'default',
   sections: [
     {
-      id: 'layout',
+      id: 'theme',
       items: [
         {
           id: 'layout-transform',
           type: ControlItemType.LAYOUT_TRANSFORM,
           title: '切换布局',
         },
-      ],
-    },
-    {
-      id: 'theme',
-      items: [
         {
           id: 'theme-toggle',
           type: ControlItemType.THEME_TOGGLE,

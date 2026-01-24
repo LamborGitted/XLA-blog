@@ -45,10 +45,12 @@ export function useHueSlider(initialHue: number, onHueChange: (hue: number) => v
     }, 300)
   }
 
-  // 处理滑条变化
+  // 处理滑条变化（实时更新）
   const handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement
-    localHue.value = parseInt(target.value)
+    const hue = parseInt(target.value)
+    localHue.value = hue
+    onHueChange(hue) // 实时更新主题
   }
 
   // 处理滑条释放（更新主题）

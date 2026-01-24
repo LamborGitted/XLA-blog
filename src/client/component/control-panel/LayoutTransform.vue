@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
+import { useGetIcon } from '@/client/composables/useIcons'
 import GlassButton from '@/client/component/GlassButton.vue'
 
 const { toggleMode, isWidgetsMode } = useLayoutTransform()
-
-// 根据当前模式选择图标
-const currentIcon = computed(() => {
-  return isWidgetsMode.value ? '☰' : '◐'
-})
+const arrowIcon = useGetIcon('arrow-right')
 
 const handleToggle = () => {
   toggleMode()
@@ -22,7 +19,7 @@ const handleToggle = () => {
     :class="{ 'is-active': isWidgetsMode }"
     @click="handleToggle"
   >
-    <span class="transform-icon">{{ currentIcon }}</span>
+    <component :is="arrowIcon" class="transform-icon" />
   </GlassButton>
 </template>
 
@@ -34,9 +31,11 @@ const handleToggle = () => {
 
 .glass-button.is-active .transform-icon {
   color: var(--color-bg);
+  transform: rotate(90deg);
 }
 
 .transform-icon {
-  font-size: 18px;
+  font-size: 20px;
+  transition: transform 0.3s ease;
 }
 </style>

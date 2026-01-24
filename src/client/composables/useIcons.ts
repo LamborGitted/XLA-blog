@@ -1,10 +1,10 @@
 import { markRaw } from 'vue'
-import { BsFillPaletteFill, BsGithub, BsFillSunFill, BsMoonFill, BsPersonFill, BsEnvelopeFill } from 'vue-icons-plus/bs'
+import { BsFillPaletteFill, BsGithub, BsFillSunFill, BsMoonFill, BsPersonFill, BsEnvelopeFill, BsArrowRight } from 'vue-icons-plus/bs'
 
 /**
  * 图标名称类型
  */
-export type IconName = 'sun' | 'moon' | 'palette' | 'github' | 'person' | 'envelope'
+export type IconName = 'sun' | 'moon' | 'palette' | 'github' | 'person' | 'envelope' | 'arrow-right'
 
 /**
  * 图标组件映射（使用 markRaw 优化性能，避免重复渲染）
@@ -15,7 +15,8 @@ const iconMap = markRaw({
   palette: markRaw(BsFillPaletteFill),
   github: markRaw(BsGithub),
   person: markRaw(BsPersonFill),
-  envelope: markRaw(BsEnvelopeFill)
+  envelope: markRaw(BsEnvelopeFill),
+  'arrow-right': markRaw(BsArrowRight)
 })
 
 /**

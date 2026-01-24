@@ -10,6 +10,7 @@ import ProfileCard from "@/client/component/ProfileCard.vue";
 import WidgetPanel from "@/client/component/widget/WidgetPanel.vue";
 import { useArticleList } from '@/client/composables/useArticleList'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
+import { useLayoutGesture } from '@/client/composables/useLayoutGesture'
 
 // 创建单例的 articleList 状态
 const articleListState = useArticleList()
@@ -22,6 +23,14 @@ provide('articleListState', articleListState)
 
 // 布局变换
 const { isWidgetsMode } = useLayoutTransform()
+
+// 启用手势控制（仅在背景和 PageTitle 上生效）
+useLayoutGesture({
+  wheelThreshold: 100,    // 滚轮滚动 100px 触发
+  swipeThreshold: 150,    // 滑动 150px 触发
+  debounceTime: 1000,     // 1秒内只能触发一次
+  targetSelector: '.page-title-container, .background-wrapper', // 仅在这两个区域生效
+})
 </script>
 
 <template>
