@@ -117,7 +117,7 @@ function parseMarkdownLinks(markdown: string): LinkSection[] {
 
     // 解析分组标题 (## 标题)
     const headingMatch = trimmedLine.match(/^##\s+(.+)$/);
-    if (headingMatch) {
+    if (headingMatch && headingMatch[1]) {
       const title = headingMatch[1].trim();
       // 生成 ID（将中文转换为拼音或使用简单的方式）
       const id = title
@@ -136,7 +136,7 @@ function parseMarkdownLinks(markdown: string): LinkSection[] {
 
     // 解析链接列表项 (- [标题](URL) - 描述)
     const linkMatch = trimmedLine.match(/^-\s*\[([^\]]+)\]\(([^)]+)\)\s*-\s*(.+)$/);
-    if (linkMatch && currentSection) {
+    if (linkMatch && currentSection && linkMatch[1] && linkMatch[2] && linkMatch[3]) {
       const [, title, url, description] = linkMatch;
       currentSection.links.push({
         title: title.trim(),
