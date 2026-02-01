@@ -1,8 +1,52 @@
 <script setup lang="ts">
-import { getLinkListConfig, getFaviconUrl } from '@/client/domain/linkList/linkList'
+import { ref, onMounted, watch, computed } from 'vue'
+import { getLinkListConfig, getLinkListConfigSync, getFaviconUrl } from '@/client/domain/linkList/linkList'
 import type { LinkSection, LinkItem } from '@/client/domain/linkList/linkList'
+import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
+import { useLinkFilter } from '@/client/composables/useLinkFilter'
 
-const linkSections = getLinkListConfig()
+const { isLinkListMode } = useLayoutTransform()
+const { setAllLinks, filteredLinks } = useLinkFilter()
+
+// 使用响应式数据存储链接列表
+const allLinkSections = ref<LinkSection[]>(getLinkListConfigSync())
+const isLoading = ref(false)
+
+// 显示的链接（使用过滤后的结果）
+const displayLinks = computed(() => filteredLinks.value)
+
+/**
+ * 加载链接配置
+ */
+async function loadLinkConfig() {
+  if (!isLoading.value) {
+    isLoading.value = true
+    try {
+      const sections = await getLinkListConfig()
+      allLinkSections.value = sections
+      // 更新过滤器的数据源
+      setAllLinks(sections)
+    } finally {
+      isLoading.value = false
+    }
+  }
+}
+
+// 监听链接列表模式，进入模式时加载配置
+watch(isLinkListMode, (newVal) => {
+  if (newVal) {
+    loadLinkConfig()
+  }
+})
+
+// 组件挂载时尝试加载（如果已经在链接列表模式）
+onMounted(() => {
+  if (isLinkListMode.value) {
+    loadLinkConfig()
+  }
+  // 初始化过滤器数据
+  setAllLinks(allLinkSections.value)
+})
 
 /**
  * 处理图标加载失败，显示 SVG 占位
@@ -16,7 +60,7 @@ function handleImageError(event: Event) {
 
 <template>
   <div class="link-list">
-    <div v-for="section in linkSections" :key="section.id" class="link-section">
+    <div v-for="section in displayLinks" :key="section.id" class="link-section">
       <h3 class="section-title">{{ section.title }}</h3>
       <div class="link-grid">
         <a
@@ -55,11 +99,35 @@ function handleImageError(event: Event) {
   max-height: 80vh;
   overflow-y: auto;
   z-index: 10;
-  padding: 24px;
+  padding: 32px 24px;
+
+  /* 自定义滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* Webkit 浏览器滚动条样式 */
+.link-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.link-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.link-list::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.link-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-textSecondary);
 }
 
 .link-section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .section-title {
@@ -69,6 +137,11 @@ function handleImageError(event: Event) {
   color: var(--color-text);
   border-left: 4px solid var(--color-primary);
   padding-left: 12px;
+  transition: border-color 0.3s ease;
+}
+
+.section-title:hover {
+  border-color: var(--color-success);
 }
 
 .link-grid {
@@ -82,53 +155,90 @@ function handleImageError(event: Event) {
   align-items: center;
   gap: 16px;
   background: var(--color-surface);
-  backdrop-filter: blur(12px) saturate(160%);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 18px;
   text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: var(--color-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.link-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-primary) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .link-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
   border-color: var(--color-primary);
 }
 
+.link-card:hover::before {
+  opacity: 0.05;
+}
+
+.link-card:active {
+  transform: translateY(-3px) scale(1.01);
+}
+
 .link-icon {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-background);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
+
 
 .link-icon img {
   width: 32px;
   height: 32px;
   object-fit: contain;
+  transition: filter 0.3s ease;
 }
+
 
 .link-content {
   flex: 1;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .link-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.3s ease;
+}
+
+.link-card:hover .link-title {
+  color: var(--color-primary);
 }
 
 .link-description {
@@ -137,19 +247,131 @@ function handleImageError(event: Event) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
-/* 响应式 */
+/* 响应式 - 大屏幕 */
+@media (min-width: 1920px) {
+  .link-list {
+    max-width: 1400px;
+  }
+
+  .link-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .link-card {
+    padding: 20px;
+  }
+
+  .link-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .link-icon img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .link-title {
+    font-size: 1.1rem;
+  }
+
+  .link-description {
+    font-size: 0.9rem;
+  }
+}
+
+/* 响应式 - 中等屏幕 */
+@media (max-width: 1200px) {
+  .link-list {
+    width: 92%;
+    padding: 28px 20px;
+  }
+
+  .link-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+}
+
+/* 响应式 - 平板 */
 @media (max-width: 768px) {
   .link-list {
     width: 95%;
     max-height: 85vh;
-    padding: 16px;
+    padding: 24px 16px;
+  }
+
+  .link-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .link-section {
+    margin-bottom: 32px;
   }
 
   .section-title {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     margin-bottom: 16px;
+  }
+
+  .link-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+
+  .link-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .link-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .link-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+  }
+
+  .link-icon img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .link-title {
+    font-size: 0.95rem;
+  }
+
+  .link-description {
+    font-size: 0.8rem;
+  }
+}
+
+/* 响应式 - 手机 */
+@media (max-width: 480px) {
+  .link-list {
+    width: 96%;
+    padding: 20px 12px;
+  }
+
+  .link-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .link-section {
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    margin-bottom: 14px;
+    padding-left: 10px;
+    border-left-width: 3px;
   }
 
   .link-grid {
@@ -159,11 +381,18 @@ function handleImageError(event: Event) {
 
   .link-card {
     padding: 12px;
+    gap: 12px;
+    border-radius: 12px;
+  }
+
+  .link-card:hover {
+    transform: translateY(-3px);
   }
 
   .link-icon {
     width: 40px;
     height: 40px;
+    border-radius: 10px;
   }
 
   .link-icon img {
@@ -173,10 +402,32 @@ function handleImageError(event: Event) {
 
   .link-title {
     font-size: 0.9rem;
+    margin-bottom: 4px;
   }
 
   .link-description {
     font-size: 0.75rem;
   }
 }
+
+/* 入场动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.link-section {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.link-section:nth-child(1) { animation-delay: 0.05s; }
+.link-section:nth-child(2) { animation-delay: 0.1s; }
+.link-section:nth-child(3) { animation-delay: 0.15s; }
+.link-section:nth-child(4) { animation-delay: 0.2s; }
 </style>

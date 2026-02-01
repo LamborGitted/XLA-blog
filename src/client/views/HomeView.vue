@@ -29,8 +29,8 @@ const { isWidgetsMode, isLinkListMode } = useLayoutTransform()
 useLayoutGesture({
   wheelThreshold: 100,    // 滚轮滚动 100px 触发
   swipeThreshold: 150,    // 滑动 150px 触发
-  debounceTime: 1000,     // 1秒内只能触发一次
-  targetSelector: '.page-title-container, .background-wrapper', // 仅在这两个区域生效
+  debounceTime: 300,     // 1秒内只能触发一次
+  targetSelector: '.page-title-container, .background-wrapper ,.link-list', // 仅在这两个区域生效
 })
 </script>
 
@@ -74,7 +74,7 @@ useLayoutGesture({
 
 /* PageTitle 位置变换 - 通过 class 平滑过渡 */
 .page-title-container.title-left {
-  left: calc(50% - 200px);
+  left: calc(40% - 200px);
 }
 
 /* ArticleList 滑动动画 */

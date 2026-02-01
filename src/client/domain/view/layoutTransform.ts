@@ -37,7 +37,7 @@ export interface LayoutTransformConfig {
  * 默认布局状态
  */
 export const DEFAULT_LAYOUT_STATE: LayoutState = {
-  mode: LayoutMode.Default,
+  mode: LayoutMode.Widgets,
   isTransforming: false,
 };
 

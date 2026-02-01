@@ -25,12 +25,12 @@ export interface LinkSection {
 }
 
 /**
- * 默认外链配置
+ * 默认外链配置（备用）
  * 站长的外链合集
  */
-export const DEFAULT_LINK_LIST: LinkSection[] = [
+const DEFAULT_LINK_LIST: LinkSection[] = [
   {
-    id: 'social',
+    id: 'social-site',
     title: '社交媒体',
     links: [
       {
@@ -40,7 +40,7 @@ export const DEFAULT_LINK_LIST: LinkSection[] = [
       },
       {
         title: 'Twitter',
-        description: '关注我的 Twitter',
+        description: 'X (原推特)',
         url: 'https://twitter.com',
       },
     ],
@@ -67,7 +67,7 @@ export const DEFAULT_LINK_LIST: LinkSection[] = [
     ],
   },
   {
-    id: 'resources',
+    id: 'learn-resources',
     title: '学习资源',
     links: [
       {
@@ -87,13 +87,113 @@ export const DEFAULT_LINK_LIST: LinkSection[] = [
       },
     ],
   },
+  {
+    id: 'resources-site',
+    title: '资源网站',
+    links: [
+      {
+        title: '瑟狐下载站',
+        description: '瑟狐编曲下载站',
+        url: 'https://cloud.leafing.xyz/',
+      },
+    ],
+  }
 ];
 
 /**
- * 获取外链配置
+ * 解析 Markdown 格式的友链配置
  */
-export function getLinkListConfig(): LinkSection[] {
-  return DEFAULT_LINK_LIST;
+function parseMarkdownLinks(markdown: string): LinkSection[] {
+  const sections: LinkSection[] = [];
+  const lines = markdown.split('\n');
+
+  let currentSection: LinkSection | null = null;
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // 跳过空行和注释
+    if (!trimmedLine || trimmedLine.startsWith('>')) continue;
+
+    // 解析分组标题 (## 标题)
+    const headingMatch = trimmedLine.match(/^##\s+(.+)$/);
+    if (headingMatch) {
+      const title = headingMatch[1].trim();
+      // 生成 ID（将中文转换为拼音或使用简单的方式）
+      const id = title
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\u4e00-\u9fa5-]/g, '');
+
+      currentSection = {
+        id,
+        title,
+        links: []
+      };
+      sections.push(currentSection);
+      continue;
+    }
+
+    // 解析链接列表项 (- [标题](URL) - 描述)
+    const linkMatch = trimmedLine.match(/^-\s*\[([^\]]+)\]\(([^)]+)\)\s*-\s*(.+)$/);
+    if (linkMatch && currentSection) {
+      const [, title, url, description] = linkMatch;
+      currentSection.links.push({
+        title: title.trim(),
+        url: url.trim(),
+        description: description.trim()
+      });
+    }
+  }
+
+  return sections;
+}
+
+/**
+ * 缓存已加载的配置
+ */
+let cachedConfig: LinkSection[] | null = null;
+
+/**
+ * 获取外链配置
+ * 优先从 /contact/links.md 读取，失败则使用默认配置
+ */
+export async function getLinkListConfig(): Promise<LinkSection[]> {
+  // 如果已有缓存，直接返回
+  if (cachedConfig) {
+    return cachedConfig;
+  }
+
+  try {
+    const response = await fetch('/contact/links.md');
+    if (!response.ok) {
+      throw new Error(`Failed to load links.md: ${response.status}`);
+    }
+
+    const markdown = await response.text();
+    const parsed = parseMarkdownLinks(markdown);
+
+    // 如果解析结果为空，使用默认配置
+    if (parsed.length === 0) {
+      console.warn('links.md is empty or invalid, using default config');
+      cachedConfig = DEFAULT_LINK_LIST;
+    } else {
+      cachedConfig = parsed;
+    }
+  } catch (error) {
+    console.error('Failed to load links.md, using default config:', error);
+    cachedConfig = DEFAULT_LINK_LIST;
+  }
+
+  return cachedConfig;
+}
+
+/**
+ * 同步获取外链配置（返回缓存或默认配置）
+ * 用于组件初始化
+ */
+export function getLinkListConfigSync(): LinkSection[] {
+  return cachedConfig || DEFAULT_LINK_LIST;
 }
 
 /**

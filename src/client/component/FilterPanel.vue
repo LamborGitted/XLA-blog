@@ -2,26 +2,61 @@
 import { inject, computed, ref } from 'vue'
 import type { useArticleList } from '@/client/composables/useArticleList'
 import { SORT_OPTIONS, type SortOption } from '@/client/composables/useArticleList'
+import { useLinkFilter, LINK_SORT_OPTIONS, type LinkSortOption } from '@/client/composables/useLinkFilter'
+import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 
 const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
-const { query, searchArticles, sortBy, setSort } = articleListState
+const { query: articleQuery, searchArticles, sortBy: articleSortBy, setSort: setArticleSort } = articleListState
+
+const linkFilter = useLinkFilter()
+const { query: linkQuery, searchLinks: searchLinkFilter, sortBy: linkSortBy, setSort: setLinkSort } = linkFilter
+
+const { isLinkListMode } = useLayoutTransform()
+
+// 当前模式下的排序选项
+const currentSortOptions = computed(() =>
+  isLinkListMode.value ? LINK_SORT_OPTIONS : SORT_OPTIONS
+)
 
 // 当前排序选项的元数据
 const currentSortOption = computed(() =>
-    SORT_OPTIONS.find(opt => opt.value === sortBy.value)
+  isLinkListMode.value
+    ? LINK_SORT_OPTIONS.find(opt => opt.value === linkSortBy.value)
+    : SORT_OPTIONS.find(opt => opt.value === articleSortBy.value)
 )
+
+// 当前查询词
+const currentQuery = computed({
+  get: () => isLinkListMode.value ? linkQuery.value : articleQuery.value,
+  set: (value: string) => {
+    if (isLinkListMode.value) {
+      searchLinkFilter(value)
+    } else {
+      searchArticles(value)
+    }
+  }
+})
 
 // 排序菜单显示状态
 const showSortMenu = ref(false)
 
 function toggleSortMenu() {
-    showSortMenu.value = !showSortMenu.value
+  showSortMenu.value = !showSortMenu.value
 }
 
-function selectSort(option: SortOption) {
-    setSort(option)
-    showSortMenu.value = false
+function selectSort(option: SortOption | LinkSortOption) {
+  if (isLinkListMode.value) {
+    setLinkSort(option as LinkSortOption)
+  } else {
+    setArticleSort(option as SortOption)
+  }
+  showSortMenu.value = false
 }
+
+// 搜索输入占位符
+const searchPlaceholder = computed(() =>
+  isLinkListMode.value ? '搜索友链...' : '搜索文章...'
+)
 </script>
 
 <template>
@@ -38,10 +73,10 @@ function selectSort(option: SortOption) {
         <Transition name="fade">
           <div v-if="showSortMenu" class="sort-menu">
             <div
-                v-for="option in SORT_OPTIONS"
+                v-for="option in currentSortOptions"
                 :key="option.value"
                 class="sort-option"
-                :class="{ 'is-active': option.value === sortBy }"
+                :class="{ 'is-active': option.value === (isLinkListMode ? linkSortBy : articleSortBy) }"
                 @click="selectSort(option.value)"
             >
               <span class="option-icon">{{ option.icon }}</span>
@@ -54,11 +89,10 @@ function selectSort(option: SortOption) {
         <!-- 搜索框 -->
         <div class="search-wrapper">
             <input
-                v-model="query"
+                v-model="currentQuery"
                 class="search-input"
                 type="text"
-                placeholder="搜索文章..."
-                @input="searchArticles(query)"
+                :placeholder="searchPlaceholder"
             />
             <div class="search-icon"></div>
         </div>
@@ -76,7 +110,7 @@ function selectSort(option: SortOption) {
     display: flex;
     align-items: center;
     gap: 12px;
-    z-index: 10;
+    z-index: 30;
 }
 
 /* 搜索框样式 */

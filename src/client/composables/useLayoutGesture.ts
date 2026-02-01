@@ -51,6 +51,24 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
     return target.closest(finalConfig.targetSelector) !== null
   }
 
+  /**
+   * 检查友链组件是否滚动到顶部
+   */
+  function isLinkListAtTop(): boolean {
+    const linkList = document.querySelector('.link-list')
+    if (!linkList) return true
+
+    return linkList.scrollTop === 0
+  }
+
+  /**
+   * 检查事件是否在友链组件内
+   */
+  function isEventInLinkList(event: Event): boolean {
+    const target = event.target as HTMLElement
+    return target.closest('.link-list') !== null
+  }
+
   // 累计滚轮距离（分别记录向上和向下）
   let accumulatedDown = 0
   let accumulatedUp = 0
@@ -93,6 +111,12 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
   function handleWheel(event: WheelEvent) {
     // 检查是否在目标区域内
     if (!isEventInTarget(event)) {
+      return
+    }
+
+    // 如果在友链组件内，需要检查是否滚动到顶部
+    if (isEventInLinkList(event) && !isLinkListAtTop()) {
+      // 在友链组件内且未滚动到顶部，不触发布局切换
       return
     }
 
