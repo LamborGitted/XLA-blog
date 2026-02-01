@@ -1,3 +1,4 @@
+
 // src/client/domain/view/layoutTransform.ts
 
 /**
@@ -7,7 +8,9 @@ export enum LayoutMode {
   /** 默认布局 */
   Default = 'default',
   /** 小组件布局 */
-  Widgets = 'widgets'
+  Widgets = 'widgets',
+  /** 链接列表布局 */
+  LinkList = 'link-list'
 }
 
 /**

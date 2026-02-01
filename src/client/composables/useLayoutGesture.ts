@@ -31,7 +31,7 @@ const DEFAULT_CONFIG: GestureConfig = {
  * 布局手势 Composable
  */
 export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
-  const { toggleMode, isWidgetsMode, isDefaultMode } = useLayoutTransform()
+  const { toggleMode, isWidgetsMode, isDefaultMode, isLinkListMode, toLinkListMode, toWidgetsMode } = useLayoutTransform()
 
   const finalConfig: GestureConfig = {
     ...DEFAULT_CONFIG,
@@ -112,9 +112,19 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
       accumulatedDown += event.deltaY
       accumulatedUp = 0 // 清空反向累计
 
+      // 默认模式 -> 小组件模式
       if (accumulatedDown >= finalConfig.wheelThreshold && isDefaultMode.value) {
         console.log('触发：向下滚动，切换到小组件布局')
         toggleMode()
+        recordTrigger()
+        resetAccumulatedWheel()
+        return
+      }
+
+      // 小组件模式 -> 链接列表模式
+      if (accumulatedDown >= finalConfig.wheelThreshold && isWidgetsMode.value) {
+        console.log('触发：向下滚动，切换到链接列表布局')
+        toLinkListMode()
         recordTrigger()
         resetAccumulatedWheel()
         return
@@ -124,6 +134,16 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
       accumulatedUp += Math.abs(event.deltaY)
       accumulatedDown = 0 // 清空反向累计
 
+      // 链接列表模式 -> 小组件模式
+      if (accumulatedUp >= finalConfig.wheelThreshold && isLinkListMode.value) {
+        console.log('触发：向上滚动，回到小组件布局')
+        toWidgetsMode()
+        recordTrigger()
+        resetAccumulatedWheel()
+        return
+      }
+
+      // 小组件模式 -> 默认模式
       if (accumulatedUp >= finalConfig.wheelThreshold && isWidgetsMode.value) {
         console.log('触发：向上滚动，回到默认布局')
         toggleMode()

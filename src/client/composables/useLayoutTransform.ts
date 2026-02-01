@@ -24,6 +24,9 @@ export function useLayoutTransform() {
   // 是否为小组件布局
   const isWidgetsMode = computed(() => sharedState.mode === LayoutMode.Widgets)
 
+  // 是否为链接列表布局
+  const isLinkListMode = computed(() => sharedState.mode === LayoutMode.LinkList)
+
   // 是否正在变换中
   const isTransforming = computed(() => sharedState.isTransforming)
 
@@ -61,6 +64,13 @@ export function useLayoutTransform() {
   }
 
   /**
+   * 切换到链接列表布局
+   */
+  function toLinkListMode(): void {
+    setMode(LayoutMode.LinkList)
+  }
+
+  /**
    * 获取配置
    */
   function getConfig(): LayoutTransformConfig {
@@ -89,6 +99,7 @@ export function useLayoutTransform() {
     mode,
     isDefaultMode,
     isWidgetsMode,
+    isLinkListMode,
     isTransforming,
 
     // 方法
@@ -96,6 +107,7 @@ export function useLayoutTransform() {
     setMode,
     toDefaultMode,
     toWidgetsMode,
+    toLinkListMode,
     getConfig,
     updateConfig,
     reset,
