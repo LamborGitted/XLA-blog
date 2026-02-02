@@ -156,7 +156,7 @@ let cachedConfig: LinkSection[] | null = null;
 
 /**
  * 获取外链配置
- * 优先从 /contact/links.md 读取，失败则使用默认配置
+ * 优先从 /src/contact/links.md 读取，失败则使用默认配置
  */
 export async function getLinkListConfig(): Promise<LinkSection[]> {
   // 如果已有缓存，直接返回
@@ -165,7 +165,7 @@ export async function getLinkListConfig(): Promise<LinkSection[]> {
   }
 
   try {
-    const response = await fetch('/contact/links.md');
+    const response = await fetch('/src/contact/links.md');
     if (!response.ok) {
       throw new Error(`Failed to load links.md: ${response.status}`);
     }
