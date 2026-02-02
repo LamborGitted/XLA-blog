@@ -1,0 +1,12 @@
+# robots.txt for XL-Blog
+# https://blog.lantxx.com.cn
+
+User-agent: *
+Allow: /
+
+# 禁止爬取控制面板等私有区域（如果将来有的话）
+Disallow: /admin/
+Disallow: /api/
+
+# 站点地图
+Sitemap: https://blog.lantxx.com.cn/sitemap.xml

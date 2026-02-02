@@ -1,14 +1,55 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/icon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lantxx Blog</title>
+
+    <!-- 基础SEO -->
+    <title>Lantxx Blog - 技术博客与编程思考</title>
+    <meta name="description" content="Lantxx的个人技术博客，分享编程技术、开发经验和学习笔记，涵盖Rust、TypeScript、Vue.js等技术栈。">
+    <meta name="keywords" content="技术博客,编程,Rust,TypeScript,Vue.js,前端开发,后端开发">
+    <meta name="author" content="Lantxx">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lantxx.com.cn/">
+    <meta property="og:title" content="Lantxx Blog - 技术博客与编程思考">
+    <meta property="og:description" content="Lantxx的个人技术博客，分享编程技术、开发经验和学习笔记">
+    <meta property="og:image" content="https://lantxx.com.cn/og-image.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://lantxx.com.cn/">
+    <meta name="twitter:title" content="Lantxx Blog - 技术博客与编程思考">
+    <meta name="twitter:description" content="Lantxx的个人技术博客，分享编程技术、开发经验和学习笔记">
+    <meta name="twitter:image" content="https://lantxx.com.cn/og-image.jpg">
+
+    <!-- 额外SEO标签 -->
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://lantxx.com.cn/">
+
+    <!-- 结构化数据 -->
+    <script type="application/ld+json" id="structured-data">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Lantxx Blog",
+      "url": "https://lantxx.com.cn/",
+      "description": "Lantxx的个人技术博客，分享编程技术、开发经验和学习笔记",
+      "author": {
+        "@type": "Person",
+        "name": "Lantxx"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
-
   </body>
 </html>
