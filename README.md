@@ -7,7 +7,7 @@
 [![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**[在线演示](https://lantxx.com.cn)** | **[快速开始](#快速开始)** | **[功能特性](#功能特性)**
+**[在线演示](https://blog.lantxx.com.cn)** | **[快速开始](#快速开始)** | **[功能特性](#功能特性)**
 
 ---
 
