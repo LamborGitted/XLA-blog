@@ -77,7 +77,7 @@ class MarkdownRenderer {
 
             // 配置代码高亮
             this.instance.options.highlight = (code, lang) => {
-                const language = lang || 'text'
+                const language = lang || 'ansi'
                 try {
                     return highlighter.codeToHtml(code, {
                         lang: language,
