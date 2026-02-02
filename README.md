@@ -31,7 +31,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/XL-Blog.git
+git clone https://github.com/LamborGitted/XL-Blog.git
 cd XL-Blog
 
 # 安装依赖
