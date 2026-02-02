@@ -1,3 +1,4 @@
+// src/client/domain/theme/backgrounds.ts
 
 export interface Background {
     src: string
@@ -5,9 +6,8 @@ export interface Background {
 }
 
 export const backgrounds: Background[] = [
-    { src: '/backgrounds/1.jpg', description: '' },
-    { src: '/backgrounds/2.png', description: '' },
-    { src: '/backgrounds/3.png', description: '' },
-    { src: '/backgrounds/4.jpg', description: '' },
-
+    { src: '/backgrounds/1.webp', description: '' },
+    { src: '/backgrounds/2.webp', description: '' },
+    { src: '/backgrounds/3.webp', description: '' },
+    { src: '/backgrounds/4.webp', description: '' },
 ]
