@@ -4,7 +4,6 @@ import { getLinkListConfig, getLinkListConfigSync, getFaviconUrl } from '@/clien
 import type { LinkSection, LinkItem } from '@/client/domain/linkList/linkList'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 import { useLinkFilter } from '@/client/composables/useLinkFilter'
-import LinkDetailModal from './LinkDetailModal.vue'
 
 const { isLinkListMode } = useLayoutTransform()
 const { setAllLinks, filteredLinks } = useLinkFilter()
