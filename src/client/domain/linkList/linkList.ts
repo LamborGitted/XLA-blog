@@ -1,4 +1,5 @@
 // src/client/domain/linkList/linkList.ts
+import linksMarkdown from '@/contact/links.md?raw'
 
 /**
  * 外链项配置
@@ -156,7 +157,7 @@ let cachedConfig: LinkSection[] | null = null;
 
 /**
  * 获取外链配置
- * 优先从 /src/contact/links.md 读取，失败则使用默认配置
+ * 使用 Vite 导入的 links.md
  */
 export async function getLinkListConfig(): Promise<LinkSection[]> {
   // 如果已有缓存，直接返回
@@ -165,13 +166,7 @@ export async function getLinkListConfig(): Promise<LinkSection[]> {
   }
 
   try {
-    const response = await fetch('/src/contact/links.md');
-    if (!response.ok) {
-      throw new Error(`Failed to load links.md: ${response.status}`);
-    }
-
-    const markdown = await response.text();
-    const parsed = parseMarkdownLinks(markdown);
+    const parsed = parseMarkdownLinks(linksMarkdown);
 
     // 如果解析结果为空，使用默认配置
     if (parsed.length === 0) {
@@ -181,7 +176,7 @@ export async function getLinkListConfig(): Promise<LinkSection[]> {
       cachedConfig = parsed;
     }
   } catch (error) {
-    console.error('Failed to load links.md, using default config:', error);
+    console.error('Failed to parse links.md, using default config:', error);
     cachedConfig = DEFAULT_LINK_LIST;
   }
 
