@@ -131,7 +131,7 @@ useLayoutGesture({
 /* 响应式调整 */
 @media (max-width: 1200px) {
   .page-title-container.title-left {
-    left: 10%;
+    left: 30%;
   }
 }
 

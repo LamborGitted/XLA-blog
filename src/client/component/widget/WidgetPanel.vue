@@ -129,7 +129,7 @@ const widgetConfigs = getEnabledWidgetConfigs()
 /* 响应式 */
 @media (max-width: 1200px) {
   .widget-panel {
-    right: 16px;
+    right: 100px;
     gap: 12px;
   }
 
@@ -144,7 +144,7 @@ const widgetConfigs = getEnabledWidgetConfigs()
   .widget-panel {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-    right: 12px;
+    right: 100px;
   }
 
   .widget-card {

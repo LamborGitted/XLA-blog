@@ -4,6 +4,7 @@ import { getLinkListConfig, getLinkListConfigSync, getFaviconUrl } from '@/clien
 import type { LinkSection, LinkItem } from '@/client/domain/linkList/linkList'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 import { useLinkFilter } from '@/client/composables/useLinkFilter'
+import LinkDetailModal from './LinkDetailModal.vue'
 
 const { isLinkListMode } = useLayoutTransform()
 const { setAllLinks, filteredLinks } = useLinkFilter()
@@ -14,6 +15,10 @@ const isLoading = ref(false)
 
 // 显示的链接（使用过滤后的结果）
 const displayLinks = computed(() => filteredLinks.value)
+
+// 弹窗相关状态
+const showModal = ref(false)
+const selectedLink = ref<LinkItem | null>(null)
 
 /**
  * 加载链接配置
