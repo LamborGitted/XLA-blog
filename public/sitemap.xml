@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- 首页 -->
   <url>
-    <loc>https://lantxx.com.cn/</loc>
+    <loc>https://blog.lantxx.com.cn/</loc>
     <lastmod>2025-01-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,42 +10,42 @@
 
   <!-- 文章列表 - 基于contact/docs目录下的文章 -->
   <url>
-    <loc>https://lantxx.com.cn/#nixos</loc>
+    <loc>https://blog.lantxx.com.cn/#nixos</loc>
     <lastmod>2025-01-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://lantxx.com.cn/#rust-ownership</loc>
+    <loc>https://blog.lantxx.com.cn/#rust-ownership</loc>
     <lastmod>2025-01-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://lantxx.com.cn/#typescript-advanced</loc>
+    <loc>https://blog.lantxx.com.cn/#typescript-advanced</loc>
     <lastmod>2025-01-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://lantxx.com.cn/#vite-plugin-dev</loc>
+    <loc>https://blog.lantxx.com.cn/#vite-plugin-dev</loc>
     <lastmod>2025-01-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://lantxx.com.cn/#vue3-composition-api</loc>
+    <loc>https://blog.lantxx.com.cn/#vue3-composition-api</loc>
     <lastmod>2025-01-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://lantxx.com.cn/#links</loc>
+    <loc>https://blog.lantxx.com.cn/#links</loc>
     <lastmod>2025-01-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

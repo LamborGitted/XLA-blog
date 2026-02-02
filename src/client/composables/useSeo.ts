@@ -14,7 +14,7 @@ export function useSeo() {
   const route = useRoute()
   const siteName = 'Lantxx Blog'
   const defaultDescription = 'Lantxx的个人技术博客，分享编程技术、开发经验和学习笔记'
-  const baseUrl = 'https://lantxx.com.cn'
+  const baseUrl = 'https://blog.lantxx.com.cn'
 
   /**
    * 更新页面SEO元数据
