@@ -12,6 +12,9 @@ const { setAllLinks, filteredLinks } = useLinkFilter()
 const allLinkSections = ref<LinkSection[]>(getLinkListConfigSync())
 const isLoading = ref(false)
 
+// 初始化过滤器状态（确保首次渲染时有数据）
+setAllLinks(allLinkSections.value)
+
 // 显示的链接（使用过滤后的结果）
 const displayLinks = computed(() => filteredLinks.value)
 
@@ -43,12 +46,11 @@ watch(isLinkListMode, (newVal) => {
   }
 })
 
-// 组件挂载时尝试加载（如果已经在链接列表模式）
-onMounted(() => {
-  if (isLinkListMode.value) {
-    loadLinkConfig()
-  }
-  // 初始化过滤器数据
+// 组件挂载时立即加载配置
+onMounted(async () => {
+  // 立即加载最新的链接配置
+  await loadLinkConfig()
+  // 初始化过滤器数据（使用已加载的数据）
   setAllLinks(allLinkSections.value)
 })
 

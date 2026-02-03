@@ -9,12 +9,12 @@ const modules = import.meta.glob(
     { as: 'raw', eager: true }
 )
 
-function extractTitle(content: string, fallback: string): string {
+export function extractTitle(content: string, fallback: string): string {
     const match = content.match(/^#\s+(.*)$/m)
     return match?.[1]?.trim() ?? fallback
 }
 
-function parseFrontMatter(content: string): { frontMatter: Record<string, any>, body: string } {
+export function parseFrontMatter(content: string): { frontMatter: Record<string, any>, body: string } {
     const frontMatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
     if (!frontMatterMatch) {
         return { frontMatter: {}, body: content }

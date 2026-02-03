@@ -104,7 +104,7 @@ const DEFAULT_LINK_LIST: LinkSection[] = [
 /**
  * 解析 Markdown 格式的友链配置
  */
-function parseMarkdownLinks(markdown: string): LinkSection[] {
+export function parseMarkdownLinks(markdown: string): LinkSection[] {
   const sections: LinkSection[] = [];
   const lines = markdown.split('\n');
 
@@ -154,6 +154,17 @@ function parseMarkdownLinks(markdown: string): LinkSection[] {
  * 缓存已加载的配置
  */
 let cachedConfig: LinkSection[] | null = null;
+
+// 立即初始化缓存，确保首次加载时就有数据
+;(function initCache() {
+  try {
+    const parsed = parseMarkdownLinks(linksMarkdown)
+    cachedConfig = parsed.length > 0 ? parsed : DEFAULT_LINK_LIST
+  } catch (error) {
+    console.error('Failed to initialize link config cache:', error)
+    cachedConfig = DEFAULT_LINK_LIST
+  }
+})()
 
 /**
  * 获取外链配置

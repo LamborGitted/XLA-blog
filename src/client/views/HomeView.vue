@@ -44,8 +44,10 @@ useLayoutGesture({
       <!-- PageTitle - 始终显示，通过 class 切换位置 -->
       <PageTitle :class="{ 'title-left': isWidgetsMode || isLinkListMode }"  v-if="!isLinkListMode "/>
 
-      <!-- FilterPanel - 始终显示 -->
-      <FilterPanel />
+      <!-- FilterPanel - 小组件模式下隐藏，向上移动动画 -->
+      <Transition name="filter-panel-slide">
+        <FilterPanel v-if="!isWidgetsMode" />
+      </Transition>
 
       <!-- ArticleList - 小组件模式和链接列表模式下隐藏 -->
       <Transition name="article-list-slide">
@@ -131,6 +133,22 @@ useLayoutGesture({
 .link-list-slide-leave-to {
   opacity: 0;
   transform: translateY(100%);
+}
+
+/* FilterPanel 向上移动动画 - 原路径归位 */
+.filter-panel-slide-enter-active,
+.filter-panel-slide-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-panel-slide-enter-from {
+  opacity: 0;
+  transform: translate(-50%, -100%);
+}
+
+.filter-panel-slide-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -100%);
 }
 
 /* 响应式调整 */
