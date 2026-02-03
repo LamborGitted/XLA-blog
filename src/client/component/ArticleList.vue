@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, ref, computed } from 'vue'
 import type { useArticleList } from '@/client/composables/useArticleList'
+import type { useArticleState } from '@/client/composables/useArticleState'
 import { useVirtualScroll } from '@/client/composables/useVirtualScroll'
 
 // 使用父组件提供的状态，添加错误处理
 const articleListState = inject<ReturnType<typeof useArticleList> | null>('articleListState', null)
+const articleState = inject<ReturnType<typeof useArticleState> | null>('articleState', null)
 
 if (!articleListState) {
   console.error('ArticleList: articleListState not provided. Make sure to provide it from parent component.')
@@ -92,7 +94,7 @@ function handleResize() {
           :key="item.path"
           class="article-item"
           :class="{ 'is-selected': pathToIndexMap.get(item.path) === selectedIndex }"
-          @click="selectByIndex(pathToIndexMap.get(item.path)!)"
+          @click="articleState?.openArticle(pathToIndexMap.get(item.path)!)"
         >
           <div class="title">{{ item.title }}</div>
           <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>

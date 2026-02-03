@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch, inject } from 'vue'
 import type { useArticleList } from '@/client/composables/useArticleList'
+import type { useArticleState } from '@/client/composables/useArticleState'
 import { useArticleCard } from '@/client/composables/useArticleDetail'
 
 // 使用父组件提供的状态
 const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
+const articleState = inject<ReturnType<typeof useArticleState>>('articleState')!
+
 const { currentArticle, selectedIndex, prevArticle, nextArticle, goPrev, goNext } = articleListState
 
 // 组件状态
@@ -30,17 +33,21 @@ const hasContent = computed(() => !!currentArticle.value)
 
 // 显示/隐藏
 function show() { visible.value = true }
+
 function hide() {
-    visible.value = false
-    selectedIndex.value = -1
+    // 使用 articleState 关闭文章（会更新 URL 并清空 selectedIndex）
+    // watch 会自动处理 visible 的变化
+    articleState?.closeArticle()
 }
 
-// 监听文章变化，更新 proxy 并显示
+// 监听文章变化，更新 proxy 并显示/隐藏
 watch(currentArticle, (newArticle) => {
     if (newArticle) {
         // 更新 proxy 的属性
         Object.assign(articleProxy, newArticle)
-        show()
+        visible.value = true
+    } else {
+        visible.value = false
     }
 }, { immediate: true })
 

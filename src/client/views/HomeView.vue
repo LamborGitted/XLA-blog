@@ -10,6 +10,7 @@ import ProfileCard from "@/client/component/ProfileCard.vue";
 import WidgetPanel from "@/client/component/widget/WidgetPanel.vue";
 import LinkList from "@/client/component/LinkList.vue";
 import { useArticleList } from '@/client/composables/useArticleList'
+import { useArticleState } from '@/client/composables/useArticleState'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 import { useLayoutGesture } from '@/client/composables/useLayoutGesture'
 
@@ -19,8 +20,12 @@ const articleListState = useArticleList()
 // 初始化文章列表
 articleListState.setArticlesFromMarkdown()
 
+// 初始化 URL 状态管理（支持浏览器前进/后退、刷新恢复）
+const articleState = useArticleState(articleListState)
+
 // 提供给子组件
 provide('articleListState', articleListState)
+provide('articleState', articleState)
 
 // 布局变换
 const { isWidgetsMode, isLinkListMode } = useLayoutTransform()

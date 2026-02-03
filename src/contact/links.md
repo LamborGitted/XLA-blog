@@ -5,7 +5,7 @@
 
 ## 社交媒体
 
-- [GitHub](https://github.com/LamborGitted/XLA-Blog) - 代码托管平台
+- [GitHub](https://github.com/) - 代码托管平台
 - [Twitter](https://twitter.com) - X (原推特)
 - [Bilibili](https://www.bilibili.com) - 哔哩哔哩弹幕视频网
 - [YouTube](https://www.youtube.com) - 视频分享平台
