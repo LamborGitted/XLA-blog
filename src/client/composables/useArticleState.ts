@@ -12,6 +12,8 @@ export function useArticleState(articleListState: ReturnType<typeof useArticleLi
 
   // 用于防止循环更新 URL 的标志
   let isUpdatingFromURL = false
+  // 存储 setTimeout 定时器引用，用于清理
+  let resetFlagTimer: ReturnType<typeof setTimeout> | null = null
 
   /**
    * 根据文章 path 查找在当前过滤列表中的索引
@@ -61,8 +63,9 @@ export function useArticleState(articleListState: ReturnType<typeof useArticleLi
         isUpdatingFromURL = true
         selectByIndex(index)
         // 恢复完成后，延迟重置标志
-        setTimeout(() => {
+        resetFlagTimer = setTimeout(() => {
           isUpdatingFromURL = false
+          resetFlagTimer = null
         }, 0)
       }
     }
@@ -91,8 +94,12 @@ export function useArticleState(articleListState: ReturnType<typeof useArticleLi
     }
 
     // 延迟重置标志
-    setTimeout(() => {
+    if (resetFlagTimer) {
+      clearTimeout(resetFlagTimer)
+    }
+    resetFlagTimer = setTimeout(() => {
       isUpdatingFromURL = false
+      resetFlagTimer = null
     }, 0)
   }
 
@@ -122,6 +129,11 @@ export function useArticleState(articleListState: ReturnType<typeof useArticleLi
 
   onUnmounted(() => {
     window.removeEventListener('popstate', handlePopState)
+    // 清理定时器，防止组件卸载后执行
+    if (resetFlagTimer) {
+      clearTimeout(resetFlagTimer)
+      resetFlagTimer = null
+    }
   })
 
   return {

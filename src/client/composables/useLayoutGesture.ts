@@ -21,10 +21,14 @@ interface GestureConfig {
  * 默认配置
  */
 const DEFAULT_CONFIG: GestureConfig = {
-  wheelThreshold: 800,      // 滚轮滚动 800px 触发
-  swipeThreshold: 150,      // 滑动 150px 触发
-  debounceTime: 1000,       // 1秒内只能触发一次
-  targetSelector: undefined, // 默认整个页面都生效
+  // 滚轮阈值：用户需要滚动此距离才会触发布局切换（约 2-3 次鼠标滚轮）
+  wheelThreshold: 800,
+  // 滑动阈值：用户需要滑动此距离才会触发布局切换（约 1/3 屏幕宽度）
+  swipeThreshold: 150,
+  // 防抖时间：两次触发之间的最小间隔（毫秒），防止频繁切换
+  debounceTime: 1000,
+  // 目标选择器：指定手势生效的区域，undefined 表示整个页面
+  targetSelector: undefined,
 }
 
 /**

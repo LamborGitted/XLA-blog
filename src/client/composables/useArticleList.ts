@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import type { ArticleMeta } from '@/client/domain/doc/articles'
-import {useMarkdown} from "@/client/composables/useMarkdown.ts"
+import { useMarkdown, extractTitle } from '@/client/composables/useMarkdown.ts'
 
 export type SortOption = 'date-desc' | 'date-asc' | 'title-asc' | 'title-desc'
 
@@ -16,11 +16,6 @@ export const SORT_OPTIONS: SortOptionMeta[] = [
     { value: 'title-asc', label: 'A-Z', icon: 'A' },
     { value: 'title-desc', label: 'Z-A', icon: 'Z' }
 ]
-
-function extractTitle(content: string, fallback: string) {
-    const match = content.match(/^#\s+(.*)$/m)
-    return match?.[1]?.trim() ?? fallback
-}
 
 function extractSubtitle(content: string): string {
     const match = content.match(/^#\s+.*\n\n?(.+)$/m)

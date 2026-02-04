@@ -1,4 +1,5 @@
 // src/client/domain/theme/theme.ts
+import { hueToDegrees } from '@/client/composables/useColorUtils'
 
 export interface ThemeColors {
     bg: string;
@@ -56,13 +57,6 @@ function hslToRgb(h: number, s: number, l: number): string {
         return Math.round(255 * color).toString(16).padStart(2, '0');
     };
     return `#${f(0)}${f(8)}${f(4)}`;
-}
-
-/**
- * 将0-255的色调值转换为0-360的色相角度
- */
-function hueToDegrees(hue: number): number {
-    return Math.round((hue / 255) * 360);
 }
 
 /**

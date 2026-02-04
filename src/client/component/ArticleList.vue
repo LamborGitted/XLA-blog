@@ -16,15 +16,25 @@ if (!articleListState) {
 const { filteredArticles, selectedIndex, selectByIndex } = articleListState
 const rowRef = ref<HTMLElement | null>(null)
 
+// ===== 虚拟滚动常量 =====
+// 单个文章项的总高度 = padding-top(15px) + padding-bottom(15px) + margin-bottom(20px) + 文本行高(约1px)
+const ARTICLE_ITEM_HEIGHT = 51
+// 预渲染的额外项数（上下各渲染此数量的不可见项，提升滚动体验）
+const OVERSCAN_ITEM_COUNT = 10
+// 底部额外空间系数：让最后一个 item 能滚动到窗口中心下方的距离
+const BOTTOM_SPACE_FACTOR = 1.6
+// 居中位置系数：让第一个 item 的中心在窗口高度的一半
+const CENTER_POSITION_FACTOR = 0.5
+
 // 使用虚拟滚动
-const ITEM_HEIGHT = 51 // 15px padding * 2 + 20px margin + 文本高度约 1px
-const OVERSCAN = 10 // 预渲染的额外项数
+const ITEM_HEIGHT = ARTICLE_ITEM_HEIGHT
+const OVERSCAN = OVERSCAN_ITEM_COUNT
 
 // 响应式窗口高度
 const windowHeight = ref(window.innerHeight)
 
 // 居中偏移：第一个 item 的中心在窗口高度的一半
-const centerOffset = computed(() => windowHeight.value / 2 - ITEM_HEIGHT / 2)
+const centerOffset = computed(() => windowHeight.value * CENTER_POSITION_FACTOR - ITEM_HEIGHT * CENTER_POSITION_FACTOR)
 
 const {
   visibleItems,
@@ -44,8 +54,8 @@ const actualOffsetY = computed(() => centerOffset.value - offsetY.value)
 // spacer 高度：让最后一个 item 能到中线往下一个身位
 // = totalHeight + 顶部空间(centerOffset) + 底部额外空间
 const spacerHeight = computed(() => {
-  // 底部空间：让最后一个item能到达 windowHeight/2 + ITEM_HEIGHT
-  const bottomSpace = windowHeight.value / 2 + ITEM_HEIGHT *1.6
+  // 底部空间：让最后一个 item 能到达窗口中心下方
+  const bottomSpace = windowHeight.value * CENTER_POSITION_FACTOR + ITEM_HEIGHT * BOTTOM_SPACE_FACTOR
   return totalHeight.value + centerOffset.value + bottomSpace
 })
 

@@ -9,10 +9,17 @@ export interface ThemeConfig {
 }
 
 /**
+ * 将 0-255 的 hue 值转换为 0-360 的色相角度
+ */
+export function hueToDegrees(hue: number): number {
+  return Math.round((hue / 255) * 360)
+}
+
+/**
  * 将 0-255 的 hue 值转换为 HSL 颜色字符串
  */
 export function hueToHsl(hue: number, saturation = 100, lightness = 50): string {
-  const degrees = Math.round((hue / 255) * 360)
+  const degrees = hueToDegrees(hue)
   return `hsl(${degrees}, ${saturation}%, ${lightness}%)`
 }
 
