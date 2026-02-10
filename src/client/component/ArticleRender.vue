@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, reactive, watch, inject } from 'vue'
+import { ref, computed, reactive, watch, inject, onMounted, onUnmounted, nextTick } from 'vue'
 import type { useArticleList } from '@/client/composables/useArticleList'
 import type { useArticleState } from '@/client/composables/useArticleState'
 import { useArticleCard } from '@/client/composables/useArticleDetail'
+import { useCodeCopy } from '@/client/composables/useCodeCopy'
 
 // 使用父组件提供的状态
 const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
@@ -28,6 +29,19 @@ const { detail, isRendering } = useArticleCard(articleProxy)
 // 当前文章详情
 const articleDetail = computed(() => detail.value)
 
+// ==================== 代码复制功能 ====================
+const { initCodeCopy, destroyCodeCopy } = useCodeCopy({
+    containerSelector: '.markdown-body',
+    showTooltip: true,
+    tooltipDuration: 2000
+})
+
+// 监听文章内容变化，重新初始化复制按钮
+watch(() => articleDetail.value?.htmlContent, async () => {
+    await nextTick()
+    initCodeCopy()
+})
+
 // 是否有文章内容
 const hasContent = computed(() => !!currentArticle.value)
 
@@ -41,15 +55,102 @@ function hide() {
 }
 
 // 监听文章变化，更新 proxy 并显示/隐藏
-watch(currentArticle, (newArticle) => {
+watch(currentArticle, (newArticle, oldArticle) => {
     if (newArticle) {
         // 更新 proxy 的属性
         Object.assign(articleProxy, newArticle)
         visible.value = true
+
+        // 如果文章发生变化，滚动到顶部
+        if (oldArticle?.id !== newArticle.id) {
+            // 使用 nextTick 确保 DOM 更新后再滚动
+            setTimeout(() => {
+                const scrollLayer = document.querySelector('.content-scroll-layer')
+                if (scrollLayer) {
+                    scrollLayer.scrollTo({ top: 0, behavior: 'smooth' })
+                }
+            }, 100)
+        }
     } else {
         visible.value = false
     }
 }, { immediate: true })
+
+// 键盘事件处理
+function handleKeydown(event: KeyboardEvent) {
+    if (!visible.value) return
+
+    // ESC：关闭文章
+    if (event.key === 'Escape') {
+        hide()
+        return
+    }
+
+    // 左箭头：上一篇
+    if (event.key === 'ArrowLeft' && prevArticle.value) {
+        goPrev()
+        return
+    }
+
+    // 右箭头：下一篇
+    if (event.key === 'ArrowRight' && nextArticle.value) {
+        goNext()
+        return
+    }
+
+    // 上箭头：向上滚动
+    if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        const scrollLayer = document.querySelector('.content-scroll-layer')
+        if (scrollLayer) {
+            scrollLayer.scrollBy({ top: -200, behavior: 'smooth' })
+        }
+        return
+    }
+
+    // 下箭头：向下滚动
+    if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        const scrollLayer = document.querySelector('.content-scroll-layer')
+        if (scrollLayer) {
+            scrollLayer.scrollBy({ top: 200, behavior: 'smooth' })
+        }
+        return
+    }
+
+    // Home：跳转到文章顶部
+    if (event.key === 'Home') {
+        event.preventDefault()
+        const scrollLayer = document.querySelector('.content-scroll-layer')
+        if (scrollLayer) {
+            scrollLayer.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+        return
+    }
+
+    // End：跳转到文章底部
+    if (event.key === 'End') {
+        event.preventDefault()
+        const scrollLayer = document.querySelector('.content-scroll-layer')
+        if (scrollLayer) {
+            scrollLayer.scrollTo({ top: scrollLayer.scrollHeight, behavior: 'smooth' })
+        }
+    }
+}
+
+// 组件挂载时添加键盘事件监听
+onMounted(() => {
+    document.addEventListener('keydown', handleKeydown)
+    // 初始化代码复制功能
+    initCodeCopy()
+})
+
+// 组件卸载时移除键盘事件监听
+onUnmounted(() => {
+    document.removeEventListener('keydown', handleKeydown)
+    // 清理代码复制功能
+    destroyCodeCopy()
+})
 
 defineExpose({ show, hide })
 </script>
@@ -363,7 +464,6 @@ defineExpose({ show, hide })
     padding: 20px;
     overflow-x: auto;
     margin: 20px 0;
-    position: relative;
 }
 
 /* 亮色模式代码块优化 */
@@ -420,6 +520,195 @@ defineExpose({ show, hide })
 .markdown-body :deep(pre)::-webkit-scrollbar-thumb:hover {
     background: var(--color-primary);
     opacity: 0.6;
+}
+
+/* ==================== 代码复制按钮样式 ==================== */
+
+/* 按钮容器 */
+.markdown-body :deep(pre) {
+    /* 确保代码块有定位上下文 */
+    position: relative;
+}
+
+/* 复制按钮基础样式 */
+.markdown-body :deep(.code-copy-button) {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-muted);
+    opacity: 0.3;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-4px);
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* 亮色模式按钮样式 */
+[data-theme-mode="light"] .markdown-body :deep(.code-copy-button) {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 暗色模式按钮样式 */
+[data-theme-mode="dark"] .markdown-body :deep(.code-copy-button) {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 悬停代码块时显示按钮 */
+.markdown-body :deep(pre:hover .code-copy-button) {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* 按钮悬停效果 */
+.markdown-body :deep(.code-copy-button:hover) {
+    opacity: 1;
+    transform: translateY(0) scale(1.05);
+    background: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme-mode="light"] .markdown-body :deep(.code-copy-button:hover) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme-mode="dark"] .markdown-body :deep(.code-copy-button:hover) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* 按钮点击效果 */
+.markdown-body :deep(.code-copy-button:active) {
+    transform: translateY(0) scale(0.95);
+}
+
+/* SVG 图标样式 */
+.markdown-body :deep(.code-copy-button svg) {
+    width: 16px;
+    height: 16px;
+    color: var(--color-text);
+    transition: all 0.2s ease;
+}
+
+[data-theme-mode="light"] .markdown-body :deep(.code-copy-button svg) {
+    color: #24292f;
+}
+
+[data-theme-mode="dark"] .markdown-body :deep(.code-copy-button svg) {
+    color: #c9d1d9;
+}
+
+/* 按钮悬停时图标颜色 */
+.markdown-body :deep(.code-copy-button:hover svg) {
+    color: #ffffff;
+}
+
+/* 复制图标动画 */
+.markdown-body :deep(.copy-icon-default),
+.markdown-body :deep(.copy-icon-arrow) {
+    transition: all 0.2s ease;
+    opacity: 1;
+}
+
+.markdown-body :deep(.copy-icon-check) {
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s ease;
+}
+
+/* 复制成功后的图标状态 */
+.markdown-body :deep(.code-copy-button.copied .copy-icon-default),
+.markdown-body :deep(.code-copy-button.copied .copy-icon-arrow) {
+    opacity: 0;
+    transform: scale(0);
+}
+
+.markdown-body :deep(.code-copy-button.copied .copy-icon-check) {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 工具提示样式 */
+.markdown-body :deep(.code-copy-tooltip) {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    padding: 6px 12px;
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 20;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme-mode="light"] .markdown-body :deep(.code-copy-tooltip) {
+    background: rgba(255, 255, 255, 0.95);
+    color: #24292f;
+}
+
+[data-theme-mode="dark"] .markdown-body :deep(.code-copy-tooltip) {
+    background: rgba(22, 27, 34, 0.95);
+    color: #c9d1d9;
+}
+
+/* 工具提示显示状态 */
+.markdown-body :deep(.code-copy-tooltip.show) {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 工具提示箭头 */
+.markdown-body :deep(.code-copy-tooltip::before) {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid var(--color-border);
+}
+
+[data-theme-mode="light"] .markdown-body :deep(.code-copy-tooltip::before) {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme-mode="dark"] .markdown-body :deep(.code-copy-tooltip::before) {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 移动端：默认显示复制按钮 */
+@media (max-width: 768px) {
+    .markdown-body :deep(.code-copy-button) {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
 }
 
 .markdown-body :deep(blockquote) {

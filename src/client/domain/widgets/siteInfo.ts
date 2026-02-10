@@ -16,7 +16,7 @@ export interface SiteInfoConfig {
  * 默认站点信息配置
  */
 export const DEFAULT_SITE_INFO: SiteInfoConfig = {
-  siteStartDate: '2024-01-01',
+  siteStartDate: '2026-01-07',
   siteName: 'XL-Blog',
   siteDescription: 'A personal blog powered by Vue 3',
 };

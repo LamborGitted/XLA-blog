@@ -77,15 +77,15 @@ class MarkdownRenderer {
 
             // 配置代码高亮
             this.instance.options.highlight = (code, lang) => {
-                const language = lang || 'ansi'
+                const language = lang || 'text'
                 try {
                     return highlighter.codeToHtml(code, {
                         lang: language,
                         theme: 'github-dark'
                     })
                 } catch (e) {
-                    // 如果不支持该语言，回退到纯文本
-                    return `<pre><code>${this.instance!.utils.escapeHtml(code)}</code></pre>`
+                    // 降级处理：返回未高亮的代码
+                    return `<pre><code class="language-${language}">${code}</code></pre>`
                 }
             }
 
