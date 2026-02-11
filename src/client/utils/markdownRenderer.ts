@@ -96,11 +96,23 @@ class MarkdownRenderer {
     }
 
     /**
+     * 移除 YAML frontmatter
+     */
+    private static removeFrontmatter(markdown: string): string {
+        // 匹配 --- 包裹的 YAML frontmatter
+        const frontmatterRegex = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/
+        return markdown.replace(frontmatterRegex, '')
+    }
+
+    /**
      * 渲染 Markdown 为 HTML（带 XSS 防护）
      */
     static async render(markdown: string): Promise<string> {
         const md = await this.getInstance()
-        const rawHtml = md.render(markdown)
+
+        // 移除 frontmatter
+        const cleanMarkdown = this.removeFrontmatter(markdown)
+        const rawHtml = md.render(cleanMarkdown)
 
         // 使用 DOMPurify 清理 HTML，防止 XSS 攻击
         const cleanHtml = DOMPurify.sanitize(rawHtml, {
