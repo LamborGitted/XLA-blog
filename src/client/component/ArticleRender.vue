@@ -4,6 +4,7 @@ import type { useArticleList } from '@/client/composables/useArticleList'
 import type { useArticleState } from '@/client/composables/useArticleState'
 import { useArticleCard } from '@/client/composables/useArticleDetail'
 import { useCodeCopy } from '@/client/composables/useCodeCopy'
+import TagBadge from '@/client/component/TagBadge.vue'
 
 // 使用父组件提供的状态
 const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
@@ -177,6 +178,14 @@ defineExpose({ show, hide })
                         </p>
                         <div v-if="articleDetail?.date" class="article-meta">
                             <span class="article-date">{{ articleDetail.date }}</span>
+                        </div>
+                        <div v-if="articleDetail?.tags && articleDetail.tags.length > 0" class="article-tags">
+                            <TagBadge
+                                v-for="tag in articleDetail.tags"
+                                :key="tag"
+                                :tag="tag"
+                                size="medium"
+                            />
                         </div>
                     </div>
 
@@ -377,6 +386,13 @@ defineExpose({ show, hide })
     font-size: 0.9rem;
     color: var(--color-muted);
     font-weight: 500;
+}
+
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
 }
 
 /* ==================== 加载状态 ==================== */

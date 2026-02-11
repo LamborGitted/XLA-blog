@@ -3,6 +3,7 @@ import { inject, onMounted, onUnmounted, ref, computed } from 'vue'
 import type { useArticleList } from '@/client/composables/useArticleList'
 import type { useArticleState } from '@/client/composables/useArticleState'
 import { useVirtualScroll } from '@/client/composables/useVirtualScroll'
+import TagBadge from '@/client/component/TagBadge.vue'
 
 // 使用父组件提供的状态，添加错误处理
 const articleListState = inject<ReturnType<typeof useArticleList> | null>('articleListState', null)
@@ -108,6 +109,14 @@ function handleResize() {
         >
           <div class="title">{{ item.title }}</div>
           <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>
+          <div v-if="item.tags && item.tags.length > 0" class="article-tags">
+            <TagBadge
+              v-for="tag in item.tags"
+              :key="tag"
+              :tag="tag"
+              size="small"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -247,5 +256,12 @@ function handleResize() {
   font-size: 14px;
   color: var(--color-primary);
   font-weight: 400;
+}
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
 }
 </style>

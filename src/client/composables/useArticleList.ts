@@ -70,12 +70,21 @@ export function useArticleList() {
     function applyFilterAndSort() {
         let result = [...originalArticles.value]
 
-        // 搜索过滤
+        // 搜索过滤（标题 + 标签）
         if (query.value) {
             const lower = query.value.toLowerCase()
-            result = result.filter(a =>
-                a.title.toLowerCase().includes(lower)
-            )
+            result = result.filter(article => {
+                // 标题匹配
+                const titleMatch = article.title.toLowerCase().includes(lower)
+
+                // 标签匹配（部分匹配）
+                const tagMatch = article.tags?.some(tag =>
+                    tag.toLowerCase().includes(lower)
+                )
+
+                // 标题 OR 标签匹配即可
+                return titleMatch || tagMatch
+            })
         }
 
         // 排序

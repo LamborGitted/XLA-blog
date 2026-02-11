@@ -55,7 +55,7 @@ function selectSort(option: SortOption | LinkSortOption) {
 
 // 搜索输入占位符
 const searchPlaceholder = computed(() =>
-  isLinkListMode.value ? '搜索友链...' : '搜索文章...'
+  isLinkListMode.value ? '搜索友链...' : '搜索文章或标签...'
 )
 </script>
 
@@ -97,8 +97,7 @@ const searchPlaceholder = computed(() =>
             <div class="search-icon"></div>
         </div>
 
-
-    </div>
+        </div>
 </template>
 
 <style scoped>
@@ -320,6 +319,7 @@ const searchPlaceholder = computed(() =>
         left: 50%;
         transform: translateX(-50%);
     }
+
 }
 
 @media (max-width: 480px) {
