@@ -37,20 +37,20 @@ const currentQuery = computed({
   }
 })
 
-// 排序菜单显示状态
-const showSortMenu = ref(false)
+// 点击排序按钮切换到下一个排序选项
+function cycleSort() {
+  const options = currentSortOptions.value
+  const currentValue = isLinkListMode.value ? linkSortBy.value : articleSortBy.value
+  const currentIndex = options.findIndex(opt => opt.value === currentValue)
+  const nextIndex = (currentIndex + 1) % options.length
+  const nextOption = options[nextIndex]
+  if (!nextOption) return
 
-function toggleSortMenu() {
-  showSortMenu.value = !showSortMenu.value
-}
-
-function selectSort(option: SortOption | LinkSortOption) {
   if (isLinkListMode.value) {
-    setLinkSort(option as LinkSortOption)
+    setLinkSort(nextOption.value as LinkSortOption)
   } else {
-    setArticleSort(option as SortOption)
+    setArticleSort(nextOption.value as SortOption)
   }
-  showSortMenu.value = false
 }
 
 // 搜索输入占位符
@@ -63,28 +63,10 @@ const searchPlaceholder = computed(() =>
     <div class="filter-panel">
 
       <!-- 排序按钮 -->
-      <div class="sort-wrapper">
-        <button class="sort-button" @click="toggleSortMenu">
-          <span class="sort-icon">{{ currentSortOption?.icon }}</span>
-          <span class="sort-label">{{ currentSortOption?.label }}</span>
-        </button>
-
-        <!-- 排序下拉菜单 -->
-        <Transition name="fade">
-          <div v-if="showSortMenu" class="sort-menu">
-            <div
-                v-for="option in currentSortOptions"
-                :key="option.value"
-                class="sort-option"
-                :class="{ 'is-active': option.value === (isLinkListMode ? linkSortBy : articleSortBy) }"
-                @click="selectSort(option.value)"
-            >
-              <span class="option-icon">{{ option.icon }}</span>
-              <span class="option-label">{{ option.label }}</span>
-            </div>
-          </div>
-        </Transition>
-      </div>
+      <button class="sort-button" @click="cycleSort">
+        <span class="sort-icon">{{ currentSortOption?.icon }}</span>
+        <span class="sort-label">{{ currentSortOption?.label }}</span>
+      </button>
 
         <!-- 搜索框 -->
         <div class="search-wrapper">
@@ -157,10 +139,6 @@ const searchPlaceholder = computed(() =>
 }
 
 /* 排序按钮样式 */
-.sort-wrapper {
-    position: relative;
-}
-
 .sort-button {
     display: flex;
     align-items: center;
@@ -196,72 +174,6 @@ const searchPlaceholder = computed(() =>
     font-size: 13px;
     font-weight: 500;
     color: var(--color-text);
-}
-
-/* 排序下拉菜单 */
-.sort-menu {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    background: var(--color-surface);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-radius: 15px;
-    padding: 10px;
-    box-shadow: var(--color-shadow);
-    border: 1px solid var(--color-border);
-    min-width: 150px;
-  z-index: 11;
-}
-
-.sort-option {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.sort-option:hover {
-    background: var(--color-primary);
-    opacity: 0.3;
-}
-
-.sort-option.is-active {
-    background: var(--color-primary);
-}
-
-.sort-option.is-active .option-icon,
-.sort-option.is-active .option-label {
-    color: var(--color-bg);
-}
-
-.option-icon {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--color-text);
-    width: 20px;
-    text-align: center;
-}
-
-.option-label {
-    font-size: 14px;
-    color: var(--color-text);
-    font-weight: 500;
-}
-
-/* 过渡动画 */
-.fade-enter-active,
-.fade-leave-active {
-    transition: all 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
 }
 
 /* 响应式设计 */
@@ -314,12 +226,6 @@ const searchPlaceholder = computed(() =>
     .sort-label {
         display: none;
     }
-
-    .sort-menu {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
 }
 
 @media (max-width: 480px) {

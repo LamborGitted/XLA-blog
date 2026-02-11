@@ -17,6 +17,10 @@ if (!articleListState) {
 const { filteredArticles, selectedIndex, selectByIndex } = articleListState
 const rowRef = ref<HTMLElement | null>(null)
 
+// 动画状态
+const isInitialLoad = ref(true)
+const clickedIndex = ref<number | null>(null)
+
 // ===== 虚拟滚动常量 =====
 // 单个文章项的总高度 = padding-top(15px) + padding-bottom(15px) + margin-bottom(20px) + 文本行高(约1px)
 const ARTICLE_ITEM_HEIGHT = 51
@@ -69,13 +73,14 @@ const pathToIndexMap = computed(() => {
   return map
 })
 
-// 初始化：不要设置 scrollTop，保持为 0，让第一个 item 在中心
+// 初始化完成后禁用初始加载状态
 onMounted(() => {
-  // scrollTop 保持为 0，这样 offsetY = 0，actualOffsetY = centerOffset
-  // 第一个 item 会在窗口中心
-
-  // 监听窗口大小变化
   window.addEventListener('resize', handleResize)
+
+  // 延迟禁用初始加载状态，让动画有足够时间播放
+  setTimeout(() => {
+    isInitialLoad.value = false
+  }, 500)
 })
 
 onUnmounted(() => {
@@ -86,6 +91,36 @@ function handleResize() {
   windowHeight.value = window.innerHeight
   // centerOffset 会自动重新计算
 }
+
+// 计算动画延迟（交错进入效果）
+function getAnimationDelay(index: number): number {
+  // 前几项快速进入，后续项稍慢
+  if (isInitialLoad.value) {
+    return Math.min(index * 50, 300) // 最多300ms延迟
+  }
+  return 0
+}
+
+// 处理点击动画
+function handleItemClick(index: number, articlePath: string) {
+  clickedIndex.value = index
+  articleState?.openArticle(index)
+
+  // 短暂延迟后重置点击状态
+  setTimeout(() => {
+    clickedIndex.value = null
+  }, 300)
+}
+
+// 初始化完成后禁用初始加载状态
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+
+  // 延迟禁用初始加载状态，让动画有足够时间播放
+  setTimeout(() => {
+    isInitialLoad.value = false
+  }, 500)
+})
 </script>
 
 <template>
@@ -101,11 +136,15 @@ function handleResize() {
       <!-- 可见项列表 -->
       <div class="items" :style="{ transform: `translateY(${actualOffsetY}px)` }">
         <div
-          v-for="item in visibleItems"
+          v-for="(item, displayIndex) in visibleItems"
           :key="item.path"
           class="article-item"
-          :class="{ 'is-selected': pathToIndexMap.get(item.path) === selectedIndex }"
-          @click="articleState?.openArticle(pathToIndexMap.get(item.path)!)"
+          :class="{
+            'is-selected': pathToIndexMap.get(item.path) === selectedIndex,
+            'is-clicked': clickedIndex === pathToIndexMap.get(item.path)
+          }"
+          :style="{ animationDelay: `${getAnimationDelay(displayIndex)}ms` }"
+          @click="handleItemClick(pathToIndexMap.get(item.path)!, item.path)"
         >
           <div class="title">{{ item.title }}</div>
           <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>
@@ -116,6 +155,10 @@ function handleResize() {
               :tag="tag"
               size="small"
             />
+          </div>
+          <!-- 点击涟漪效果 -->
+          <div class="ripple-container">
+            <span class="ripple"></span>
           </div>
         </div>
       </div>
@@ -223,26 +266,117 @@ function handleResize() {
 }
 
 .article-item {
+  position: relative;
   padding: 15px 0px 15px 15px;
   margin-bottom: 20px;
   border-radius: 8px;
-  transition: all 0.3s ease;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+
+  /* 进入动画 */
+  animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards,
+              fadeIn 0.5s ease backwards;
+
+  /* 过渡动画 */
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
 }
 
+/* 初始进入动画 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) translateZ(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 悬停效果 - 3D 变换 */
 .article-item:hover {
   background: var(--color-accent);
-  opacity: 0.8;
+  border-color: var(--color-primary);
+  transform: translateY(-2px) translateZ(20px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  opacity: 0.95;
 }
 
+/* 点击反馈 */
+.article-item.is-clicked {
+  transform: translateY(0) translateZ(0) scale(0.98);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.article-item.is-clicked .ripple {
+  animation: rippleEffect 0.6s ease-out;
+}
+
+@keyframes rippleEffect {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* 选中状态 */
 .article-item.is-selected {
   background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb, 100, 100, 100), 0.4);
+  transform: translateX(5px);
+}
+
+.article-item.is-selected:hover {
+  transform: translateX(5px) translateY(-2px) scale(1.02);
 }
 
 .article-item.is-selected .title,
 .article-item.is-selected .subtitle {
   color: var(--color-bg);
+}
+
+/* 涟漪效果容器 */
+.ripple-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.ripple {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: scale(0);
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  margin-top: -10px;
+  margin-left: -10px;
 }
 
 .title {

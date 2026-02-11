@@ -86,6 +86,7 @@ const widgetConfigs = getEnabledWidgetConfigs()
 
 /* 通用小组件卡片样式 */
 .widget-card {
+  position: relative;
   background: var(--color-surface);
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
@@ -102,8 +103,49 @@ const widgetConfigs = getEnabledWidgetConfigs()
 }
 
 .widget-card:hover {
-  transform: translateX(-8px);
+  transform: translateX(-8px) ;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* 流动的彩色渐变边框 */
+.widget-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 4px;
+  background: conic-gradient(
+    from 0deg,
+    #ff6b6b,
+    #ffd93d,
+    #6bcb77,
+    #4d96ff,
+    #cc78ff,
+    #ff6b6b
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: borderFlow 3s linear infinite;
+  pointer-events: none;
+
+}
+
+.widget-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes borderFlow {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
 }
 
 .widget-icon {

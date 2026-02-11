@@ -171,10 +171,37 @@ function handleImageError(event: Event) {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   position: relative;
-  overflow: hidden;
 }
 
+/* 流动的彩色渐变边框 */
 .link-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 4px;
+  background: conic-gradient(
+    from 0deg,
+    #ff6b6b,
+    #ffd93d,
+    #6bcb77,
+    #4d96ff,
+    #cc78ff,
+    #ff6b6b
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: borderFlow 3s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.link-card::after {
   content: '';
   position: absolute;
   top: 0;
@@ -185,16 +212,30 @@ function handleImageError(event: Event) {
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
 }
 
 .link-card:hover {
   transform: translateY(-6px) scale(1.02);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  border-color: var(--color-primary);
 }
 
 .link-card:hover::before {
+  opacity: 1;
+}
+
+.link-card:hover::after {
   opacity: 0.05;
+}
+
+@keyframes borderFlow {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
 }
 
 .link-card:active {

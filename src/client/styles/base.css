@@ -26,6 +26,10 @@
     --space-sm: 8px;
     --space-md: 16px;
     --space-lg: 24px;
+
+    /* 彩色边框动画变量 */
+    --widget-border-width: 4px;
+    --widget-border-duration: 3s;
 }
 
 html, body {
