@@ -155,7 +155,7 @@ watch(scrollTop, (newScrollTop) => {
           @click="handleItemClick(pathToIndexMap.get(item.path)!, item.path)"
         >
           <div class="title">{{ item.title }}</div>
-          <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>
+<!--          <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>-->
           <div v-if="item.tags && item.tags.length > 0" class="article-tags">
             <TagBadge
               v-for="tag in item.tags"
