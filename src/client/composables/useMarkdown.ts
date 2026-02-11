@@ -6,7 +6,7 @@ import type { ArticleMeta } from '@/client/domain/doc/articles.ts'
  */
 const modules = import.meta.glob(
     '@/contact/docs/**/*.md',
-    { as: 'raw', eager: true }
+    { query: '?raw', import: 'default', eager: true }
 )
 
 export function extractTitle(content: string, fallback: string): string {
@@ -18,7 +18,7 @@ export function extractTitle(content: string, fallback: string): string {
  * Parse YAML value that could be a string, array, or scalar value
  */
 function parseYamlValue(key: string, lines: string[], startIndex: number): { value: string | string[], nextIndex: number } {
-    const firstLine = lines[startIndex]
+    const firstLine = lines[startIndex]!
     const colonIndex = firstLine.indexOf(':')
     const rawValue = firstLine.substring(colonIndex + 1).trim()
 
@@ -33,7 +33,7 @@ function parseYamlValue(key: string, lines: string[], startIndex: number): { val
 
         // Collect all following lines that start with '- '
         while (i < lines.length) {
-            const line = lines[i]
+            const line = lines[i]!
             const trimmed = line.trim()
 
             // Stop if we encounter another key:value pair (has colon)
@@ -43,7 +43,7 @@ function parseYamlValue(key: string, lines: string[], startIndex: number): { val
 
             // Stop at empty line followed by a non-list item
             if (trimmed === '') {
-                const nextLine = i + 1 < lines.length ? lines[i + 1].trim() : ''
+                const nextLine = i + 1 < lines.length ? (lines[i + 1] ?? '').trim() : ''
                 if (nextLine !== '' && !nextLine.startsWith('-')) {
                     break
                 }
@@ -68,7 +68,7 @@ function parseYamlValue(key: string, lines: string[], startIndex: number): { val
     // Check for bracket array syntax: tags: [tag1, tag2]
     const arrayMatch = rawValue.match(/^\[(.*)\]$/)
     if (arrayMatch) {
-        const arrayContent = arrayMatch[1]
+        const arrayContent = arrayMatch[1] ?? ''
         if (arrayContent.trim() === '') {
             return { value: [], nextIndex: startIndex }
         }
@@ -97,11 +97,11 @@ export function parseFrontMatter(content: string): { frontMatter: Record<string,
     const [, frontMatterStr, body] = frontMatterMatch
 
     const frontMatter: Record<string, any> = {}
-    const lines = frontMatterStr.split(/\r?\n/)
+    const lines = (frontMatterStr ?? '').split(/\r?\n/)
 
     let i = 0
     while (i < lines.length) {
-        const line = lines[i]
+        const line = lines[i]!
         const colonIndex = line.indexOf(':')
 
         if (colonIndex > 0) {
