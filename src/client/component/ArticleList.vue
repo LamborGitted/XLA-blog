@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, ref, computed } from 'vue'
-import type { useArticleList } from '@/client/composables/useArticleList'
-import type { useArticleState } from '@/client/composables/useArticleState'
+import { onMounted, onUnmounted, ref, computed, watch, nextTick, toRef } from 'vue'
+import { useArticleListStore } from '@/stores'
 import { useVirtualScroll } from '@/client/composables/useVirtualScroll'
+import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 import TagBadge from '@/client/component/TagBadge.vue'
 
-// 使用父组件提供的状态，添加错误处理
-const articleListState = inject<ReturnType<typeof useArticleList> | null>('articleListState', null)
-const articleState = inject<ReturnType<typeof useArticleState> | null>('articleState', null)
-
-if (!articleListState) {
-  console.error('ArticleList: articleListState not provided. Make sure to provide it from parent component.')
-  throw new Error('articleListState is required but not provided')
-}
-
-const { filteredArticles, selectedIndex, selectByIndex } = articleListState
+// 使用 Pinia store
+const articleListStore = useArticleListStore()
+const filteredArticles = toRef(articleListStore, 'filteredArticles')
+const selectedIndex = toRef(articleListStore, 'selectedIndex')
+const selectByIndex = articleListStore.selectByIndex
 const rowRef = ref<HTMLElement | null>(null)
+
+// 获取布局相关方法
+const { isDefaultMode, getArticleListScrollTop, saveArticleListScrollTop } = useLayoutTransform()
 
 // 动画状态
 const isInitialLoad = ref(true)
@@ -77,6 +75,14 @@ const pathToIndexMap = computed(() => {
 onMounted(() => {
   window.addEventListener('resize', handleResize)
 
+  // 恢复保存的滚动位置
+  nextTick(() => {
+    const savedScrollTop = getArticleListScrollTop()
+    if (savedScrollTop > 0 && rowRef.value) {
+      rowRef.value.scrollTop = savedScrollTop
+    }
+  })
+
   // 延迟禁用初始加载状态，让动画有足够时间播放
   setTimeout(() => {
     isInitialLoad.value = false
@@ -85,6 +91,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
+
+  // 保存滚动位置
+  if (rowRef.value) {
+    saveArticleListScrollTop(rowRef.value.scrollTop)
+  }
 })
 
 function handleResize() {
@@ -104,7 +115,7 @@ function getAnimationDelay(index: number): number {
 // 处理点击动画
 function handleItemClick(index: number, articlePath: string) {
   clickedIndex.value = index
-  articleState?.openArticle(index)
+  selectByIndex(index)
 
   // 短暂延迟后重置点击状态
   setTimeout(() => {
@@ -112,14 +123,11 @@ function handleItemClick(index: number, articlePath: string) {
   }, 300)
 }
 
-// 初始化完成后禁用初始加载状态
-onMounted(() => {
-  window.addEventListener('resize', handleResize)
-
-  // 延迟禁用初始加载状态，让动画有足够时间播放
-  setTimeout(() => {
-    isInitialLoad.value = false
-  }, 500)
+// 实时保存滚动位置
+watch(scrollTop, (newScrollTop) => {
+  if (isDefaultMode.value) {
+    saveArticleListScrollTop(newScrollTop)
+  }
 })
 </script>
 
@@ -180,8 +188,8 @@ onMounted(() => {
 
   /* 默认模糊背景 */
   background: var(--color-surfaceBlur);
-  backdrop-filter: blur(6px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: var(--glass-blur-medium);
+  -webkit-backdrop-filter: var(--glass-blur-medium);
 }
 
 /* 大屏优化 */
@@ -277,11 +285,11 @@ onMounted(() => {
   backface-visibility: hidden;
 
   /* 进入动画 */
-  animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards,
+  animation: slideInUp 0.5s var(--ease-out-cubic) backwards,
               fadeIn 0.5s ease backwards;
 
   /* 过渡动画 */
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+  transition: all 0.4s var(--ease-out-cubic),
               border-color 0.3s ease,
               box-shadow 0.3s ease;
 }
@@ -311,15 +319,17 @@ onMounted(() => {
 .article-item:hover {
   background: var(--color-accent);
   border-color: var(--color-primary);
-  transform: translateY(-2px) translateZ(20px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px) translateZ(20px) scale(1.03);
+  border-radius: 0px;
+
+  box-shadow: var(--shadow-lg);
   opacity: 0.95;
 }
 
 /* 点击反馈 */
 .article-item.is-clicked {
   transform: translateY(0) translateZ(0) scale(0.98);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .article-item.is-clicked .ripple {
@@ -341,7 +351,7 @@ onMounted(() => {
 .article-item.is-selected {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb, 100, 100, 100), 0.4);
+  box-shadow: var(--shadow-lg);
   transform: translateX(5px);
 }
 

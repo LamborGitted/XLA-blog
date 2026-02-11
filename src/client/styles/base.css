@@ -27,6 +27,42 @@
     --space-md: 16px;
     --space-lg: 24px;
 
+    /* ===== 新增：模糊强度 ===== */
+    --blur-xs: 6px;
+    --blur-sm: 8px;
+    --blur-md: 10px;
+    --blur-lg: 12px;
+    --blur-xl: 16px;
+    --blur-2xl: 20px;
+
+    /* ===== 新增：饱和度级别 ===== */
+    --saturate-low: 120%;
+    --saturate-md: 160%;
+    --saturate-high: 180%;
+
+    /* ===== 新增：毛玻璃预设 ===== */
+    --glass-blur-light: blur(var(--blur-sm)) saturate(var(--saturate-low));
+    --glass-blur-medium: blur(var(--blur-md)) saturate(var(--saturate-md));
+    --glass-blur-heavy: blur(var(--blur-xl)) saturate(var(--saturate-high));
+    --glass-blur-xheavy: blur(var(--blur-2xl)) saturate(var(--saturate-md));
+
+    /* ===== 新增：过渡曲线 ===== */
+    --ease-out-cubic: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-cubic: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce-cubic: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-sharp-cubic: cubic-bezier(0.4, 0, 1, 1);
+
+    /* ===== 新增：过渡时长 ===== */
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    --duration-slow: 500ms;
+
+    /* ===== 新增：阴影预设 ===== */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --color-shadow: var(--shadow-lg);
+
     /* 彩色边框动画变量 */
     --widget-border-width: 4px;
     --widget-border-duration: 3s;

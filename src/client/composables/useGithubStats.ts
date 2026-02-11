@@ -3,6 +3,7 @@
 import { ref, computed } from 'vue'
 import { githubManager, type GithubStats } from '@/client/domain/widgets/github'
 import type { GithubReposWidgetConfig } from '@/client/domain/widgets/widgets'
+import { WidgetType } from '@/client/domain/widgets/widgets'
 
 /**
  * GitHub 统计 Composable
@@ -19,7 +20,7 @@ export function useGithubStats(config?: Partial<GithubReposWidgetConfig>) {
 
   // 合并配置
   const githubConfig: GithubReposWidgetConfig = {
-    type: 'github-repos' as any, // 使用 any 避免循环依赖
+    type: WidgetType.GithubRepos,
     enabled: true,
     order: 4,
     showStars: config?.showStars ?? false,

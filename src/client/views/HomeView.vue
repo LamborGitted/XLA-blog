@@ -1,74 +1,76 @@
 <script setup lang="ts">
-import { ref, provide } from 'vue'
-import BackgroundSwitcher from "@/client/component/BackgroundSwitcher.vue";
-import ArticleList from "@/client/component/ArticleList.vue";
-import ArticleRender from "@/client/component/ArticleRender.vue";
-import FilterPanel from "@/client/component/FilterPanel.vue";
-import ControlPanel from "@/client/component/ControlPanel.vue";
-import PageTitle from "@/client/component/PageTitle.vue";
-import ProfileCard from "@/client/component/ProfileCard.vue";
-import WidgetPanel from "@/client/component/widget/WidgetPanel.vue";
-import LinkList from "@/client/component/LinkList.vue";
-import { useArticleList } from '@/client/composables/useArticleList'
-import { useArticleState } from '@/client/composables/useArticleState'
+import { onMounted, onUnmounted } from 'vue'
+import BackgroundSwitcher from "@/client/component/BackgroundSwitcher.vue"
+import ArticleList from "@/client/component/ArticleList.vue"
+import ArticleRender from "@/client/component/ArticleRender.vue"
+import FilterPanel from "@/client/component/FilterPanel.vue"
+import ControlPanel from "@/client/component/ControlPanel.vue"
+import PageTitle from "@/client/component/PageTitle.vue"
+import ProfileCard from "@/client/component/ProfileCard.vue"
+import WidgetPanel from "@/client/component/widget/WidgetPanel.vue"
+import LinkList from "@/client/component/LinkList.vue"
+import { useArticleListStore } from '@/stores'
+import { useArticleStore } from '@/stores'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 import { useLayoutGesture } from '@/client/composables/useLayoutGesture'
 
-// 创建单例的 articleList 状态
-const articleListState = useArticleList()
+// 使用 Pinia stores
+const articleListStore = useArticleListStore()
+const articleStore = useArticleStore()
 
 // 初始化文章列表
-articleListState.setArticlesFromMarkdown()
+onMounted(() => {
+  articleListStore.initialize()
+  articleStore.init()
+})
 
-// 初始化 URL 状态管理（支持浏览器前进/后退、刷新恢复）
-const articleState = useArticleState(articleListState)
-
-// 提供给子组件
-provide('articleListState', articleListState)
-provide('articleState', articleState)
+// 清理
+onUnmounted(() => {
+  articleStore.destroy()
+})
 
 // 布局变换
 const { isWidgetsMode, isLinkListMode } = useLayoutTransform()
 
 // 启用手势控制（仅在背景和 PageTitle 上生效）
 useLayoutGesture({
-  wheelThreshold: 100,    // 滚轮滚动 100px 触发
-  swipeThreshold: 150,    // 滑动 150px 触发
-  debounceTime: 300,     // 1秒内只能触发一次
-  targetSelector: '.page-title-container, .background-wrapper ,.link-list', // 仅在这两个区域生效
+  wheelThreshold: 100,
+  swipeThreshold: 150,
+  debounceTime: 300,
+  targetSelector: '.page-title-container, .background-wrapper ,.link-list',
 })
 </script>
 
 <template>
   <div class="main">
-      <!-- PageTitle - 始终显示，通过 class 切换位置 -->
-      <PageTitle :class="{ 'title-left': isWidgetsMode || isLinkListMode }"  v-if="!isLinkListMode "/>
+    <!-- PageTitle - 始终显示，通过 class 切换位置 -->
+    <PageTitle :class="{ 'title-left': isWidgetsMode || isLinkListMode }" v-if="!isLinkListMode" />
 
-      <!-- FilterPanel - 小组件模式下隐藏，向上移动动画 -->
-      <Transition name="filter-panel-slide">
-        <FilterPanel v-if="!isWidgetsMode" />
-      </Transition>
+    <!-- FilterPanel - 小组件模式下隐藏，向上移动动画 -->
+    <Transition name="filter-panel-slide">
+      <FilterPanel v-if="!isWidgetsMode" />
+    </Transition>
 
-      <!-- ArticleList - 小组件模式和链接列表模式下隐藏 -->
-      <Transition name="article-list-slide">
-        <ArticleList v-if="!isWidgetsMode && !isLinkListMode" class="articleList"/>
-      </Transition>
+    <!-- ArticleList - 小组件模式和链接列表模式下隐藏 -->
+    <Transition name="article-list-slide">
+      <ArticleList v-if="!isWidgetsMode && !isLinkListMode" class="articleList"/>
+    </Transition>
 
-      <!-- WidgetPanel - 仅在小组件模式下显示 -->
-      <Transition name="widget-panel-slide">
-        <WidgetPanel v-if="isWidgetsMode" />
-      </Transition>
+    <!-- WidgetPanel - 仅在小组件模式下显示 -->
+    <Transition name="widget-panel-slide">
+      <WidgetPanel v-if="isWidgetsMode" />
+    </Transition>
 
-      <!-- LinkList - 仅在链接列表模式下显示 -->
-      <Transition name="link-list-slide">
-        <LinkList v-if="isLinkListMode" />
-      </Transition>
+    <!-- LinkList - 仅在链接列表模式下显示 -->
+    <Transition name="link-list-slide">
+      <LinkList v-if="isLinkListMode" />
+    </Transition>
 
-      <!-- 其他组件保持不变 -->
-      <BackgroundSwitcher/>
-      <ArticleRender />
-      <ControlPanel />
-      <ProfileCard />
+    <!-- 其他组件保持不变 -->
+    <BackgroundSwitcher/>
+    <ArticleRender />
+    <ControlPanel />
+    <ProfileCard />
   </div>
 </template>
 

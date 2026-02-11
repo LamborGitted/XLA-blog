@@ -1,6 +1,7 @@
 ---
 subtitle:  NixOS
 date:  2026-01-13
+tags: [Linux, NixOS, 包管理, 系统配置]
 ---
 
 

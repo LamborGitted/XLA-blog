@@ -21,6 +21,8 @@ export interface LayoutState {
   mode: LayoutMode;
   /** 是否正在变换中 */
   isTransforming: boolean;
+  /** 文章列表滚动位置 */
+  articleListScrollTop?: number;
 }
 
 /**
@@ -37,8 +39,9 @@ export interface LayoutTransformConfig {
  * 默认布局状态
  */
 export const DEFAULT_LAYOUT_STATE: LayoutState = {
-  mode: LayoutMode.Widgets,
+  mode: LayoutMode.Default,
   isTransforming: false,
+  articleListScrollTop: 0,
 };
 
 /**
@@ -133,6 +136,27 @@ class LayoutStateManager {
    */
   updateConfig(config: Partial<LayoutTransformConfig>): void {
     this.config = { ...this.config, ...config };
+  }
+
+  /**
+   * 保存文章列表滚动位置
+   */
+  saveArticleListScrollTop(scrollTop: number): void {
+    this.state.articleListScrollTop = scrollTop
+  }
+
+  /**
+   * 获取保存的文章列表滚动位置
+   */
+  getArticleListScrollTop(): number {
+    return this.state.articleListScrollTop ?? 0
+  }
+
+  /**
+   * 清除文章列表滚动位置
+   */
+  clearArticleListScrollTop(): void {
+    this.state.articleListScrollTop = 0
   }
 
   /**

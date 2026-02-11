@@ -1,0 +1,172 @@
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import type { ArticleMeta } from '@/client/domain/doc/articles'
+import { useMarkdown, extractTitle } from '@/client/composables/useMarkdown'
+
+export type SortOption = 'date-desc' | 'date-asc' | 'title-asc' | 'title-desc'
+
+export interface SortOptionMeta {
+  value: SortOption
+  label: string
+  icon: string
+}
+
+export const SORT_OPTIONS: SortOptionMeta[] = [
+  { value: 'date-desc', label: '最新', icon: '↓' },
+  { value: 'date-asc', label: '最早', icon: '↑' },
+  { value: 'title-asc', label: 'A-Z', icon: 'A' },
+  { value: 'title-desc', label: 'Z-A', icon: 'Z' }
+]
+
+function extractSubtitle(content: string): string {
+  const match = content.match(/^#\s+.*\n\n?(.+)$/m)
+  return match?.[1]?.trim() ?? ''
+}
+
+export const useArticleListStore = defineStore('articleList', () => {
+  // State
+  const originalArticles = ref<ArticleMeta[]>([])
+  const filteredArticles = ref<ArticleMeta[]>([])
+  const selectedIndex = ref(-1)
+  const query = ref('')
+  const sortBy = ref<SortOption>('date-desc')
+
+  // Computed
+  const currentArticle = computed(() => {
+    if (selectedIndex.value === -1) return null
+    return filteredArticles.value[selectedIndex.value] ?? null
+  })
+
+  const prevArticle = computed(() => {
+    if (selectedIndex.value <= 0) return null
+    return filteredArticles.value[selectedIndex.value - 1] ?? null
+  })
+
+  const nextArticle = computed(() => {
+    if (selectedIndex.value === -1 || selectedIndex.value >= filteredArticles.value.length - 1) return null
+    return filteredArticles.value[selectedIndex.value + 1] ?? null
+  })
+
+  // Actions
+  function sortArticles(articles: ArticleMeta[], sortOption: SortOption): ArticleMeta[] {
+    const sorted = [...articles]
+
+    switch (sortOption) {
+      case 'date-desc':
+        return sorted.sort((a, b) => {
+          const aTime = a.date ? new Date(a.date).getTime() : 0
+          const bTime = b.date ? new Date(b.date).getTime() : 0
+          return bTime - aTime
+        })
+      case 'date-asc':
+        return sorted.sort((a, b) => {
+          const aTime = a.date ? new Date(a.date).getTime() : 0
+          const bTime = b.date ? new Date(b.date).getTime() : 0
+          return aTime - bTime
+        })
+      case 'title-asc':
+        return sorted.sort((a, b) => a.title.localeCompare(b.title, 'zh-CN'))
+      case 'title-desc':
+        return sorted.sort((a, b) => b.title.localeCompare(a.title, 'zh-CN'))
+      default:
+        return sorted
+    }
+  }
+
+  function applyFilterAndSort() {
+    let result = [...originalArticles.value]
+
+    // 搜索过滤（标题 + 标签）
+    if (query.value) {
+      const lower = query.value.toLowerCase()
+      result = result.filter(article => {
+        // 标题匹配
+        const titleMatch = article.title.toLowerCase().includes(lower)
+
+        // 标签匹配（部分匹配）
+        const tagMatch = article.tags?.some(tag =>
+          tag.toLowerCase().includes(lower)
+        )
+
+        // 标题 OR 标签匹配即可
+        return titleMatch || tagMatch
+      })
+    }
+
+    // 排序
+    result = sortArticles(result, sortBy.value)
+
+    filteredArticles.value = result
+    selectedIndex.value = -1
+  }
+
+  function initialize() {
+    const docs = useMarkdown()
+
+    originalArticles.value = docs.map(doc => ({
+      ...doc,
+      subtitle: doc.content ? extractSubtitle(doc.content) : ''
+    }))
+
+    applyFilterAndSort()
+  }
+
+  function selectByIndex(index: number) {
+    if (index < 0 || index >= filteredArticles.value.length) return
+    selectedIndex.value = index
+  }
+
+  function searchArticles(keyword: string) {
+    query.value = keyword
+    applyFilterAndSort()
+  }
+
+  function setSort(option: SortOption) {
+    sortBy.value = option
+    applyFilterAndSort()
+  }
+
+  function cycleSort() {
+    const currentIndex = SORT_OPTIONS.findIndex(opt => opt.value === sortBy.value)
+    const nextIndex = (currentIndex + 1) % SORT_OPTIONS.length
+    const nextOption = SORT_OPTIONS[nextIndex]
+    if (nextOption) {
+      setSort(nextOption.value)
+    }
+  }
+
+  function goPrev() {
+    if (prevArticle.value) {
+      selectedIndex.value = selectedIndex.value - 1
+    }
+  }
+
+  function goNext() {
+    if (nextArticle.value) {
+      selectedIndex.value = selectedIndex.value + 1
+    }
+  }
+
+  return {
+    // State
+    originalArticles,
+    filteredArticles,
+    selectedIndex,
+    query,
+    sortBy,
+
+    // Computed
+    currentArticle,
+    prevArticle,
+    nextArticle,
+
+    // Actions
+    initialize,
+    selectByIndex,
+    searchArticles,
+    setSort,
+    cycleSort,
+    goPrev,
+    goNext
+  }
+})

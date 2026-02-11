@@ -1,5 +1,7 @@
 // src/client/domain/widgets/github.ts
 
+import type { GithubRepoResponse } from './githubApiTypes'
+
 /**
  * GitHub 配置
  */
@@ -148,7 +150,7 @@ class GithubManager {
 
       const data = await response.json();
 
-      return data.map((repo: any) => ({
+      return data.map((repo: GithubRepoResponse) => ({
         id: repo.id,
         name: repo.name,
         description: repo.description,

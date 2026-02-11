@@ -134,8 +134,8 @@ const getSocialIcon = (iconName?: string) => {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -159,8 +159,8 @@ const getSocialIcon = (iconName?: string) => {
     var(--color-surface),
     var(--color-surfaceBlur)
   );
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: var(--glass-blur-xheavy);
+  -webkit-backdrop-filter: var(--glass-blur-xheavy);
   border-radius: 24px;
   box-shadow: var(--color-shadow);
   display: flex;
@@ -180,13 +180,13 @@ const getSocialIcon = (iconName?: string) => {
   border: none;
   background: var(--color-muted);
   opacity: 0.6;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(var(--blur-md));
+  -webkit-backdrop-filter: blur(var(--blur-md));
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--duration-normal) var(--ease-in-out-cubic);
   z-index: 10;
 }
 
@@ -412,20 +412,20 @@ const getSocialIcon = (iconName?: string) => {
 /* ==================== 动画效果 ==================== */
 /* 遮罩层淡入淡出 */
 .profile-card-enter-active .profile-card-overlay {
-  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.4s var(--ease-in-out-cubic);
 }
 
 .profile-card-leave-active .profile-card-overlay {
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1);
+  transition: opacity 0.3s var(--ease-sharp-cubic);
 }
 
 /* 卡片容器动画：缩放 + 上滑 + 淡入 */
 .profile-card-enter-active .profile-card-container {
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.5s var(--ease-bounce-cubic);
 }
 
 .profile-card-leave-active .profile-card-container {
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s var(--ease-in-out-cubic);
 }
 
 .profile-card-enter-from {
@@ -448,7 +448,7 @@ const getSocialIcon = (iconName?: string) => {
 
 /* 内部元素错落动画 */
 .profile-card-enter-active .profile-header {
-  animation: slideInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  animation: slideInUp 0.6s var(--ease-bounce-cubic) 0.1s both;
 }
 
 .profile-card-enter-active .profile-section {
@@ -469,7 +469,7 @@ const getSocialIcon = (iconName?: string) => {
 
 /* 关闭按钮动画 */
 .profile-card-enter-active .close-button {
-  animation: rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+  animation: rotateIn 0.4s var(--ease-bounce-cubic) 0.4s both;
 }
 
 /* 关键帧动画 */

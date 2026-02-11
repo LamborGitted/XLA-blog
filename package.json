@@ -19,6 +19,7 @@
   "dependencies": {
     "dompurify": "^3.3.1",
     "markdown-it": "^14.1.0",
+    "pinia": "^3.0.4",
     "shiki": "^3.21.0",
     "vite-plugin-md": "^0.21.5",
     "vue": "^3.5.26",

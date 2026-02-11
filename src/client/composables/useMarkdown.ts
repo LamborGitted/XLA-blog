@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import type { ArticleMeta } from '@/client/domain/doc/articles.ts'
+import type { ArticleFrontMatter } from '@/client/domain/doc/articles.ts'
 
 /**
  * 读取 @/contact/docs 下所有 markdown 文件
@@ -88,7 +89,7 @@ function parseYamlValue(key: string, lines: string[], startIndex: number): { val
     return { value: rawValue, nextIndex: startIndex }
 }
 
-export function parseFrontMatter(content: string): { frontMatter: Record<string, any>, body: string } {
+export function parseFrontMatter(content: string): { frontMatter: ArticleFrontMatter, body: string } {
     const frontMatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)
     if (!frontMatterMatch) {
         return { frontMatter: {}, body: content }
@@ -96,7 +97,7 @@ export function parseFrontMatter(content: string): { frontMatter: Record<string,
 
     const [, frontMatterStr, body] = frontMatterMatch
 
-    const frontMatter: Record<string, any> = {}
+    const frontMatter: ArticleFrontMatter = {}
     const lines = (frontMatterStr ?? '').split(/\r?\n/)
 
     let i = 0

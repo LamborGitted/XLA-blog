@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { inject, computed, ref } from 'vue'
-import type { useArticleList } from '@/client/composables/useArticleList'
+import { computed } from 'vue'
+import { useArticleListStore } from '@/stores'
 import { SORT_OPTIONS, type SortOption } from '@/client/composables/useArticleList'
 import { useLinkFilter, LINK_SORT_OPTIONS, type LinkSortOption } from '@/client/composables/useLinkFilter'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 
-const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
-const { query: articleQuery, searchArticles, sortBy: articleSortBy, setSort: setArticleSort } = articleListState
-
+// 使用 Pinia store
+const articleListStore = useArticleListStore()
+// 链接过滤状态
 const linkFilter = useLinkFilter()
-const { query: linkQuery, searchLinks: searchLinkFilter, sortBy: linkSortBy, setSort: setLinkSort } = linkFilter
+// 布局状态（只调用一次）
+const layout = useLayoutTransform()
 
-const { isLinkListMode } = useLayoutTransform()
+// 当前是否为链接列表模式
+const isLinkListMode = computed(() => layout.isLinkListMode.value)
 
 // 当前模式下的排序选项
 const currentSortOptions = computed(() =>
@@ -19,49 +21,63 @@ const currentSortOptions = computed(() =>
 )
 
 // 当前排序选项的元数据
-const currentSortOption = computed(() =>
-  isLinkListMode.value
-    ? LINK_SORT_OPTIONS.find(opt => opt.value === linkSortBy.value)
-    : SORT_OPTIONS.find(opt => opt.value === articleSortBy.value)
-)
+const currentSortOption = computed(() => {
+  const mode = isLinkListMode.value
+  // linkFilter 返回的是 ref，需要 .value；articleListStore 会自动解包
+  const currentSortValue = mode ? linkFilter.sortBy.value : articleListStore.sortBy
+  const options = mode ? LINK_SORT_OPTIONS : SORT_OPTIONS
+  return options.find(opt => opt.value === currentSortValue)
+})
 
 // 当前查询词
 const currentQuery = computed({
-  get: () => isLinkListMode.value ? linkQuery.value : articleQuery.value,
+  get: () => {
+    const mode = isLinkListMode.value
+    // linkFilter.query 是 ref，需要 .value；articleListStore.query 会自动解包
+    return mode ? linkFilter.query.value : articleListStore.query
+  },
   set: (value: string) => {
-    if (isLinkListMode.value) {
-      searchLinkFilter(value)
+    const mode = isLinkListMode.value
+    if (mode) {
+      linkFilter.searchLinks(value)
     } else {
-      searchArticles(value)
+      articleListStore.searchArticles(value)
     }
   }
 })
 
 // 点击排序按钮切换到下一个排序选项
 function cycleSort() {
+  const mode = isLinkListMode.value
   const options = currentSortOptions.value
-  const currentValue = isLinkListMode.value ? linkSortBy.value : articleSortBy.value
+
+  // 获取当前排序值
+  let currentValue: string
+  if (mode) {
+    currentValue = linkFilter.sortBy.value
+  } else {
+    currentValue = articleListStore.sortBy
+  }
+
   const currentIndex = options.findIndex(opt => opt.value === currentValue)
   const nextIndex = (currentIndex + 1) % options.length
   const nextOption = options[nextIndex]
   if (!nextOption) return
 
-  if (isLinkListMode.value) {
-    setLinkSort(nextOption.value as LinkSortOption)
+  if (mode) {
+    linkFilter.setSort(nextOption.value as LinkSortOption)
   } else {
-    setArticleSort(nextOption.value as SortOption)
+    articleListStore.setSort(nextOption.value as SortOption)
   }
 }
 
 // 搜索输入占位符
 const searchPlaceholder = computed(() =>
-  isLinkListMode.value ? '搜索友链...' : '搜索文章或标签...'
-)
+  layout.isLinkListMode.value ? '搜索友链...' : '搜索文章或标签...')
 </script>
 
 <template>
     <div class="filter-panel">
-
       <!-- 排序按钮 -->
       <button class="sort-button" @click="cycleSort">
         <span class="sort-icon">{{ currentSortOption?.icon }}</span>
@@ -78,8 +94,7 @@ const searchPlaceholder = computed(() =>
             />
             <div class="search-icon"></div>
         </div>
-
-        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -100,13 +115,13 @@ const searchPlaceholder = computed(() =>
     display: flex;
     align-items: center;
     background: var(--color-surface);
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: var(--glass-blur-medium);
+    -webkit-backdrop-filter: var(--glass-blur-medium);
     border-radius: 25px;
     padding: 0 16px;
     height: 44px;
     border: 1px solid var(--color-border);
-    transition: all 0.3s ease;
+    transition: all var(--duration-normal) ease;
 }
 
 .search-wrapper:hover {
@@ -144,14 +159,14 @@ const searchPlaceholder = computed(() =>
     align-items: center;
     gap: 6px;
     background: var(--color-surface);
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: var(--glass-blur-medium);
+    -webkit-backdrop-filter: var(--glass-blur-medium);
     border: 1px solid var(--color-border);
     border-radius: 25px;
     padding: 0 16px;
     height: 44px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--duration-normal) ease;
 }
 
 .sort-button:hover {
@@ -196,6 +211,11 @@ const searchPlaceholder = computed(() =>
     .search-input {
         width: 150px;
     }
+
+    .sort-button {
+        height: 40px;
+        padding: 0 14px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -203,24 +223,11 @@ const searchPlaceholder = computed(() =>
         top: 16px;
         left: 16px;
         right: 16px;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .search-wrapper {
-        flex: 1;
-        min-width: 120px;
-    }
-
-    .search-input {
-        width: 100%;
-        font-size: 13px;
     }
 
     .sort-button {
         height: 40px;
-        padding: 0 14px;
+        padding: 0 12px;
     }
 
     .sort-label {
@@ -235,12 +242,11 @@ const searchPlaceholder = computed(() =>
     }
 
     .search-wrapper {
-        height: 38px;
-        padding: 0 12px;
+        flex: 1;
+        min-width: 120px;
     }
 
     .sort-button {
-        height: 38px;
         padding: 0 12px;
     }
 }

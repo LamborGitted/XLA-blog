@@ -1,6 +1,7 @@
 ---
 subtitle:  TypeScript 高级技巧
 date:  2026-01-16
+tags: [TypeScript, 泛型, 类型系统, 前端]
 ---
 
 # TypeScript 高级技巧与最佳实践(测试文档)

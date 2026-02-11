@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { inject } from 'vue'
-import type { useArticleList } from '@/client/composables/useArticleList'
-import { WidgetType } from '@/client/domain/widgets/widgets'
+import { useArticleListStore } from '@/stores'
 import type { ArticleCountWidgetConfig } from '@/client/domain/widgets/widgets'
+import { WidgetType } from '@/client/domain/widgets/widgets'
 
 interface Props {
   config?: Partial<ArticleCountWidgetConfig>
@@ -11,8 +10,8 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const articleListState = inject<ReturnType<typeof useArticleList>>('articleListState')!
-const { originalArticles, filteredArticles } = articleListState
+// 使用 Pinia store
+const articleListStore = useArticleListStore()
 
 const config: ArticleCountWidgetConfig = {
   type: WidgetType.ArticleCount,
@@ -21,8 +20,8 @@ const config: ArticleCountWidgetConfig = {
   showDetails: props.config?.showDetails ?? false,
 }
 
-const totalCount = computed(() => originalArticles.value.length)
-const filteredCount = computed(() => filteredArticles.value.length)
+const totalCount = computed(() => articleListStore.originalArticles.length)
+const filteredCount = computed(() => articleListStore.filteredArticles.length)
 const isFiltered = computed(() => totalCount.value !== filteredCount.value)
 
 const displayText = computed(() => {

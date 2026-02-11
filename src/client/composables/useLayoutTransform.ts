@@ -111,5 +111,10 @@ export function useLayoutTransform() {
     getConfig,
     updateConfig,
     reset,
+
+    // 滚动位置管理
+    saveArticleListScrollTop: layoutStateManager.saveArticleListScrollTop.bind(layoutStateManager),
+    getArticleListScrollTop: layoutStateManager.getArticleListScrollTop.bind(layoutStateManager),
+    clearArticleListScrollTop: layoutStateManager.clearArticleListScrollTop.bind(layoutStateManager),
   }
 }

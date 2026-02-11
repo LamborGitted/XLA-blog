@@ -83,7 +83,7 @@ export function generateThemeFromConfig(config: ThemeConfig): Theme {
                 surface: hslToRgb(degrees, 5, 100),
 
                 // 模糊表面色
-                surfaceBlur: 'rgba(255, 255, 255, 0.65)',
+                surfaceBlur: 'rgba(255, 255, 255, 0.88)',
 
                 // 文字色 - 深色，低饱和度
                 text: hslToRgb(degrees, 30, 15),

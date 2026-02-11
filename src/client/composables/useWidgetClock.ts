@@ -1,7 +1,7 @@
 // src/client/composables/useWidgetClock.ts
 
 import { ref, computed, onUnmounted, watch } from 'vue'
-import { ClockRefreshMode } from '@/client/domain/widgets/widgets'
+import { ClockRefreshMode, WidgetType } from '@/client/domain/widgets/widgets'
 import type { ClockWidgetConfig } from '@/client/domain/widgets/widgets'
 
 /**
@@ -50,7 +50,7 @@ export function useWidgetClock(config?: Partial<ClockWidgetConfig>) {
 
   // 合并配置
   const clockConfig: ClockWidgetConfig = {
-    type: 'clock' as any, // 使用 any 避免循环依赖
+    type: WidgetType.Clock,
     enabled: true,
     order: 1,
     refreshMode: config?.refreshMode ?? ClockRefreshMode.Seconds,

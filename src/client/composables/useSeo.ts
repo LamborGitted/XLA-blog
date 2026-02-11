@@ -1,5 +1,6 @@
 import { onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import type { StructuredData } from '@/client/domain/seo/structuredData'
 
 interface MetaConfig {
   title?: string
@@ -7,7 +8,7 @@ interface MetaConfig {
   keywords?: string
   ogImage?: string
   ogType?: 'website' | 'article'
-  structuredData?: Record<string, any>
+  structuredData?: StructuredData
 }
 
 export function useSeo() {
