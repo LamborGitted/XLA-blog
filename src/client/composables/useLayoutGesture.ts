@@ -225,19 +225,39 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
 
     // 判断是否是水平滑动（水平距离大于垂直距离）
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      // 左滑：切换到小组件布局
-      if (deltaX > finalConfig.swipeThreshold && isDefaultMode.value && canTrigger()) {
-        console.log('触发：左滑，切换到小组件布局')
-        toggleMode()
-        recordTrigger()
-        isTracking = false
+      // === 左滑（向左） ===
+      if (deltaX > finalConfig.swipeThreshold && canTrigger()) {
+        // 默认模式 → 小组件模式
+        if (isDefaultMode.value) {
+          console.log('触发：左滑，切换到小组件布局')
+          toggleMode()
+          recordTrigger()
+          isTracking = false
+        }
+        // 小组件模式 → 链接列表模式
+        else if (isWidgetsMode.value) {
+          console.log('触发：左滑，切换到链接列表布局')
+          toLinkListMode()
+          recordTrigger()
+          isTracking = false
+        }
       }
-      // 右滑：回到默认布局
-      else if (deltaX < -finalConfig.swipeThreshold && isWidgetsMode.value && canTrigger()) {
-        console.log('触发：右滑，回到默认布局')
-        toggleMode()
-        recordTrigger()
-        isTracking = false
+      // === 右滑（向右） ===
+      else if (deltaX < -finalConfig.swipeThreshold && canTrigger()) {
+        // 链接列表模式 → 小组件模式
+        if (isLinkListMode.value) {
+          console.log('触发：右滑，返回小组件布局')
+          toWidgetsMode()
+          recordTrigger()
+          isTracking = false
+        }
+        // 小组件模式 → 默认模式
+        else if (isWidgetsMode.value) {
+          console.log('触发：右滑，回到默认布局')
+          toggleMode()
+          recordTrigger()
+          isTracking = false
+        }
       }
     }
   }
