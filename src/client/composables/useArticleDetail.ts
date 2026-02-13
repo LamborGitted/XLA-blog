@@ -1,4 +1,4 @@
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import type { ArticleDetail } from '@/client/domain/doc/articleDetail'
 import type { ArticleMeta } from '@/client/domain/doc/articles'
 import MarkdownRenderer from '@/client/utils/markdownRenderer'
@@ -14,6 +14,9 @@ export function useArticleCard(article: ArticleMeta) {
 
     // 错误状态
     const renderError = ref<Error | null>(null)
+
+    // 防抖定时器
+    let renderTimer: ReturnType<typeof setTimeout> | null = null
 
     /**
      * 渲染 Markdown 内容
@@ -35,15 +38,46 @@ export function useArticleCard(article: ArticleMeta) {
         }
     }
 
+    /**
+     * 防抖渲染（300ms 延迟）
+     */
+    function debouncedRender() {
+        // 清除上次的定时器
+        if (renderTimer) {
+            clearTimeout(renderTimer)
+        }
+
+        // 设置新的定时器
+        renderTimer = setTimeout(() => {
+            render()
+            renderTimer = null
+        }, 300)
+    }
+
     // 重试渲染
     async function retryRender() {
         renderError.value = null
+
+        // 取消防抖，立即渲染
+        if (renderTimer) {
+            clearTimeout(renderTimer)
+            renderTimer = null
+        }
+
         await render()
     }
 
-    // 监听 article 变化，自动重新渲染
-    watchEffect(() => {
-        render()
+    // 监听 article 变化，自动重新渲染（使用 watch 替代 watchEffect 实现防抖）
+    watch(() => article, () => {
+        debouncedRender()
+    }, { deep: true })
+
+    // 组件卸载时清理定时器
+    onUnmounted(() => {
+        if (renderTimer) {
+            clearTimeout(renderTimer)
+            renderTimer = null
+        }
     })
 
     /**
