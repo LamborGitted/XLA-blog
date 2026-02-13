@@ -104,6 +104,7 @@ export function useBackground(intervalMs = 4000) {
             const img = new Image()
 
             img.onload = () => {
+                console.log(`[useBackground] 背景加载成功: ${targetBg.src}`)
                 // 保存当前背景为上一张背景（用于淡出动画）
                 prevBg.value = currentBg.value
                 // 切换到新背景
@@ -120,13 +121,13 @@ export function useBackground(intervalMs = 4000) {
 
             img.onerror = () => {
                 // 加载失败，跳过此图片
-                console.warn(`[useBackground] 预加载失败: ${targetBg.src}`)
+                console.error(`[useBackground] 预加载失败: ${targetBg.src}`)
                 isLoadingNext = false
                 resolve() // 即使失败也 resolve，避免阻塞
             }
 
-            // 开始加载
-            img.src = targetBg.src
+            // 开始加载（使用 encodeURI 确保路径正确编码）
+            img.src = encodeURI(targetBg.src)
         })
     }
 

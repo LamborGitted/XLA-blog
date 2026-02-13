@@ -84,10 +84,6 @@ export default defineConfig(async () => {
       // 目标浏览器（Cloudflare 支持现代浏览器）
       target: 'es2015'
     },
-    // 生产环境移除 console 和 debugger
-    esbuild: {
-      drop: ['console', 'debugger']
-    },
     // 依赖预构建优化
     optimizeDeps: {
       include: [
