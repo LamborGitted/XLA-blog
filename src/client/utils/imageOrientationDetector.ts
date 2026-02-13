@@ -67,19 +67,20 @@ export async function detectImageOrientation(
             // 4. 缓存结果
             imageMetadataCache.set(background.src, { width, height, orientation })
 
+            console.log(`[imageOrientationDetector] 检测完成: ${background.src} -> ${orientation}`)
             resolve(orientation)
         }
 
         img.onerror = () => {
             // 加载失败时，默认为横向
-            console.warn(`Failed to load image for orientation detection: ${background.src}`)
+            console.error(`[imageOrientationDetector] 加载失败: ${background.src}`)
             const fallbackOrientation: ImageOrientation = 'landscape'
             imageMetadataCache.set(background.src, { width: 1920, height: 1080, orientation: fallbackOrientation })
             resolve(fallbackOrientation)
         }
 
-        // 开始加载
-        img.src = background.src
+        // 开始加载（使用 encodeURI 确保路径正确编码）
+        img.src = encodeURI(background.src)
     })
 }
 
@@ -109,7 +110,7 @@ export async function detectOrientations(backgrounds: Background[]): Promise<Ori
             result[orientation].push(background)
         } else {
             // 检测失败时，默认为横向
-            console.warn(`Orientation detection failed for ${background.src}, defaulting to landscape`)
+            console.error(`[imageOrientationDetector] 检测失败: ${background.src}`)
             result.landscape.push(background)
         }
     })
