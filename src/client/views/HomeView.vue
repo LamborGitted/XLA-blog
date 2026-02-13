@@ -10,6 +10,7 @@ import ProfileCard from "@/client/component/ProfileCard.vue"
 import WidgetPanel from "@/client/component/widget/WidgetPanel.vue"
 import LinkList from "@/client/component/LinkList.vue"
 import ArticleError from '@/client/component/article/ArticleError.vue'
+import LayoutDots from '@/client/component/LayoutDots.vue'
 import { useArticleListStore } from '@/stores'
 import { useArticleStore } from '@/stores'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
@@ -98,6 +99,7 @@ useLayoutGesture({
     <ArticleRender />
     <ControlPanel />
     <ProfileCard />
+    <LayoutDots />
     </template>
   </div>
 </template>
