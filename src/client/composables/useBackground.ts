@@ -53,14 +53,18 @@ export function useBackground(intervalMs = 4000) {
     })
 
     /**
-     * 计算下一张背景（预加载用）
+     * 生成随机索引（避免与当前索引重复）
      */
-    const nextBg = computed(() => {
-        const list = currentBgList.value
-        if (list.length === 0) return backgrounds[0]!
-        const nextIndex = (currentIndex.value + 1) % list.length
-        return list[nextIndex]!
-    })
+    const getRandomIndex = (listLength: number, avoidIndex: number): number => {
+        if (listLength <= 1) return 0
+
+        let newIndex: number
+        do {
+            newIndex = Math.floor(Math.random() * listLength)
+        } while (newIndex === avoidIndex && listLength > 1)
+
+        return newIndex
+    }
 
     /**
      * 切换到指定方向的背景图片
@@ -72,13 +76,13 @@ export function useBackground(intervalMs = 4000) {
         // 更新当前方向
         currentOrientation.value = orientation
 
-        // 重置索引到第一张
-        currentIndex.value = 0
-
-        // 获取新方向的第一张背景
+        // 获取新方向的背景列表
         const newList = currentBgList.value
         if (newList.length > 0) {
-            const newBg = newList[0]!
+            // 随机选择一张背景
+            const randomIndex = getRandomIndex(newList.length, -1)
+            currentIndex.value = randomIndex
+            const newBg = newList[randomIndex]!
 
             // 预加载新背景
             await preloadAndSwitch(newBg)
@@ -127,7 +131,7 @@ export function useBackground(intervalMs = 4000) {
     }
 
     /**
-     * 切换到下一张背景
+     * 切换到下一张背景（随机选择）
      */
     const next = () => {
         // 防止重复加载
@@ -136,8 +140,9 @@ export function useBackground(intervalMs = 4000) {
         const list = currentBgList.value
         if (list.length === 0) return
 
-        const nextBgValue = nextBg.value
-        const nextIndex = (currentIndex.value + 1) % list.length
+        // 随机选择下一张背景（避免与当前重复）
+        const nextIndex = getRandomIndex(list.length, currentIndex.value)
+        const nextBgValue = list[nextIndex]!
 
         // 预加载并切换
         preloadAndSwitch(nextBgValue).then(() => {
@@ -204,10 +209,12 @@ export function useBackground(intervalMs = 4000) {
             const initialOrientation: ImageOrientation = isPortrait ? 'portrait' : 'landscape'
             currentOrientation.value = initialOrientation
 
-            // 选择第一张背景
+            // 随机选择第一张背景
             const initialList = orientedBackgrounds.value[initialOrientation]
             if (initialList.length > 0) {
-                currentBg.value = initialList[0]!
+                const randomIndex = getRandomIndex(initialList.length, -1)
+                currentIndex.value = randomIndex
+                currentBg.value = initialList[randomIndex]!
             }
         } catch (error) {
             console.error('[useBackground] 背景分类失败:', error)
@@ -237,7 +244,6 @@ export function useBackground(intervalMs = 4000) {
 
     return {
         currentBg,
-        prevBg,
-        nextBg
+        prevBg
     }
 }
