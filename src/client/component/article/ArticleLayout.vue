@@ -80,6 +80,11 @@ function handleOverlayClick() {
   padding: 0;
 }
 
+/* 离开动画期间禁用鼠标事件，允许立即滚动下层内容 */
+.article-render-leave-active {
+  pointer-events: none;
+}
+
 /* 暗色模式下的遮罩 */
 [data-theme-mode="dark"] .article-render-overlay {
   background: rgba(0, 0, 0, 0.6);
