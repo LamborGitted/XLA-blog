@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <defs>
+    <style>
+      .bg { fill: #00d4ff; }
+      .circuit { fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linecap: round; }
+      .node { fill: #ffffff; }
+      .text { fill: #ffffff; font-family: Arial Black, sans-serif; font-weight: bold; font-size: 6px; }
+    </style>
+  </defs>
+
+  <!-- 背景 -->
+  <rect x="1" y="1" width="14" height="14" rx="3" class="bg"/>
+
+  <!-- 电路纹路 -->
+  <g class="circuit">
+    <circle cx="5" cy="5" r="1.2" class="node"/>
+    <circle cx="11" cy="8" r="1.2" class="node"/>
+  </g>
+
+  <!-- XL 文字 -->
+  <text x="8" y="11" class="text" text-anchor="middle">XL</text>
+</svg>

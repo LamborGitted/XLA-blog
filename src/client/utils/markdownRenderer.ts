@@ -131,21 +131,25 @@ class MarkdownRenderer {
                     'div', 'span', 'del', 's', 'sub', 'sup'
                 ],
                 // 允许的属性白名单
-                // 注意：style 属性已从全局移除，仅通过 hook 允许代码块标签使用
+                // 注意：style 属性允许用于代码高亮（通过 hook 进一步限制只允许特定标签）
                 ALLOWED_ATTR: [
                     'href', 'src', 'alt', 'title', 'class',
-                    'id', 'width', 'height', 'target', 'rel'
+                    'id', 'width', 'height', 'target', 'rel',
+                    'style', // 用于 Shiki 语法高亮的内联样式
+                    'tabindex' // Shiki 生成的 pre 标签可能包含此属性
                 ],
                 // 允许的 URI 协议（防止 javascript: 等危险协议）
                 ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
                 // 强制外部链接添加 rel="noopener noreferrer"
                 ADD_ATTR: ['rel'],
-                // 添加 hooks：仅允许代码块标签（<pre> 和 <code>）保留 style 属性
+                // 添加 hooks：允许代码块标签（<pre>、<code> 和 <span>）保留 style 属性
+                // 注意：Shiki 使用 <span> 标签来实现语法高亮，需要保留其 style 属性
                 // @ts-expect-error - DOMPurify 的类型定义不完整，但 hook 是有效的
                 uponSanitizeAttribute: (node: Element, data: { attrName: string; attrValue: string }) => {
                     if (data.attrName === 'style') {
                         const tagName = node.tagName.toLowerCase()
-                        if (tagName !== 'pre' && tagName !== 'code') {
+                        // 只允许代码相关的标签保留 style 属性（用于语法高亮）
+                        if (tagName !== 'pre' && tagName !== 'code' && tagName !== 'span') {
                             data.attrValue = ''
                         }
                     }

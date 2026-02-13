@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useArticleListStore, SORT_OPTIONS, type SortOption } from '@/stores'
 import { useLinkFilter, LINK_SORT_OPTIONS, type LinkSortOption } from '@/client/composables/useLinkFilter'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 
+// 搜索框引用
+const searchInputRef = ref<HTMLInputElement>()
+
 // 使用 Pinia store
 const articleListStore = useArticleListStore()
+
+// 鼠标悬停时自动聚焦搜索框
+function focusSearchInput() {
+  searchInputRef.value?.focus()
+}
+
+// 鼠标离开时取消聚焦
+function blurSearchInput() {
+  searchInputRef.value?.blur()
+}
 // 链接过滤状态
 const linkFilter = useLinkFilter()
 // 布局状态（只调用一次）
@@ -84,8 +97,13 @@ const searchPlaceholder = computed(() =>
       </button>
 
         <!-- 搜索框 -->
-        <div class="search-wrapper">
+        <div
+          class="search-wrapper"
+          @mouseover="focusSearchInput"
+          @mouseleave="blurSearchInput"
+        >
             <input
+                ref="searchInputRef"
                 v-model="currentQuery"
                 class="search-input"
                 type="text"

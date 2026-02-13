@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XL-Blog 图标预览 - 科技风格</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 40px;
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    .icons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .icon-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .icon-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .icon-title {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      color: #4facfe;
+      font-weight: 600;
+    }
+
+    .icon-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-img {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-size {
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.8;
+      min-width: 80px;
+    }
+
+    .size-label {
+      font-weight: 600;
+      color: #4facfe;
+    }
+
+    .usage-section {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      padding: 30px;
+    }
+
+    .usage-section h2 {
+      margin-bottom: 20px;
+      color: #4facfe;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 0.9rem;
+      color: #7dd3fc;
+      line-height: 1.8;
+    }
+
+    .highlight {
+      color: #f093fb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>XL-Blog 图标预览</h1>
+    <p class="subtitle">科技风格 • 蒙德里安几何设计 • 多尺寸支持</p>
+
+    <div class="icons-grid">
+      <!-- 16×16 -->
+      <div class="icon-card">
+        <div class="icon-title">16 × 16</div>
+        <div class="icon-preview">
+          <div class="icon-item">
+            <div class="icon-img">
+              <img src="icon-16.svg" alt="16×16" width="48" height="48">
+            </div>
+            <div class="icon-size">
+              <span class="size-label">16×16</span><br>
+              <small>favicon.svg</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 48×48 -->
+      <div class="icon-card">
+        <div class="icon-title">48 × 48</div>
+        <div class="icon-preview">
+          <div class="icon-item">
+            <div class="icon-img">
+              <img src="icon-48.svg" alt="48×48" width="64" height="64">
+            </div>
+            <div class="icon-size">
+              <span class="size-label">48×48</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 100×100 -->
+      <div class="icon-card">
+        <div class="icon-title">100 × 100 (标准)</div>
+        <div class="icon-preview">
+          <div class="icon-item">
+            <div class="icon-img">
+              <img src="icon-flat-mondrian.svg" alt="100×100" width="100" height="100">
+            </div>
+            <div class="icon-size">
+              <span class="size-label">100×100</span><br>
+              <small>主图标</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 192×192 -->
+      <div class="icon-card">
+        <div class="icon-title">192 × 192 (高清)</div>
+        <div class="icon-preview">
+          <div class="icon-item">
+            <div class="icon-img">
+              <img src="icon-192.svg" alt="192×192" width="96" height="96">
+            </div>
+            <div class="icon-size">
+              <span class="size-label">192×192</span><br>
+              <small>Retina/高分辫</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-section">
+      <h2>📖 使用方法</h2>
+
+      <div class="code-block">
+        <code>
+<span class="highlight">&lt;!-- 在 HTML 中使用 --&gt;</span>
+
+<span class="highlight">&lt;!-- 方案 1: 标准 SVG (推荐) --&gt;</span>
+&lt;link rel="<span class="highlight">icon</span>" type="<span class="highlight">image/svg+xml</span>" href="<span class="highlight">/icon-flat-mondrian.svg</span>" /&gt;
+
+<span class="highlight">&lt;!-- 方案 2: Favicon --&gt;</span>
+&lt;link rel="<span class="highlight">shortcut icon</span>" href="<span class="highlight">/favicon.svg</span>" /&gt;
+
+<span class="highlight">&lt;!-- 在 Vue 组件中使用 --&gt;</span>
+&lt;template&gt;
+  &lt;img src="<span class="highlight">/icon-flat-mondrian.svg</span>" alt="<span class="highlight">XL-Blog</span>" /&gt;
+&lt;/template&gt;
+
+<span class="highlight">&lt;style scoped&gt;</span>
+.logo {
+  width: 100px;
+  height: 100px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+&lt;/style scoped&gt;
+        </code>
+      </div>
+    </div>
+
+    <div class="usage-section">
+      <h2>🎨 设计特点</h2>
+
+      <ul style="line-height: 1.8; color: rgba(255,255,255,0.9);">
+        <li>✅ <strong>科技感</strong> - 电路纹路设计，展现技术主题</li>
+        <li>✅ <strong>蓝色主题</strong> - 使用 #00d4ff 科技蓝作为主色调</li>
+        <li>✅ <strong>高对比度</strong> - 白色元素在深蓝背景上清晰可见</li>
+        <li>✅ <strong>简洁优雅</strong> - 极简设计，易于识别</li>
+        <li>✅ <strong>响应式</strong> - 提供多种尺寸适配不同场景</li>
+      </ul>
+    </div>
+
+    <div class="usage-section">
+      <h2>📏 图标文件清单</h2>
+
+      <table style="width: 100%; border-collapse: collapse; color: rgba(255,255,255,0.9);">
+        <thead>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+            <th style="padding: 12px; text-align: left;">文件名</th>
+            <th style="padding: 12px; text-align: left;">尺寸</th>
+            <th style="padding: 12px; text-align: left;">用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <td style="padding: 12px;">favicon.svg</td>
+            <td style="padding: 12px;">32 × 32</td>
+            <td style="padding: 12px;">浏览器标签页图标</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <td style="padding: 12px;">icon-16.svg</td>
+            <td style="padding: 12px;">16 × 16</td>
+            <td style="padding: 12px;">小尺寸/移动端</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <td style="padding: 12px;">icon-48.svg</td>
+            <td style="padding: 12px;">48 × 48</td>
+            <td style="padding: 12px;">中等尺寸/桌面通知</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px;">icon-192.svg</td>
+            <td style="padding: 12px;">192 × 192</td>
+            <td style="padding: 12px;">大尺寸/Retina显示屏</td>
+          </tr>
+          <tr style="background: rgba(255,255,255,0.05);">
+            <td style="padding: 12px;"><strong>icon-flat-mondrian.svg</strong></td>
+            <td style="padding: 12px;">100 × 100</td>
+            <td style="padding: 12px;">主 Logo/标准尺寸</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

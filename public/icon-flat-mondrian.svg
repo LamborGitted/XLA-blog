@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <style>
+      .strip-1 { fill: #ff6b6b; }
+      .strip-2 { fill: #4ecdc4; }
+      .strip-3 { fill: #feca57; }
+      .text-white { fill: #ffffff; }
+    </style>
+  </defs>
+
+  <!-- 色块背景 -->
+  <rect x="10" y="10" width="80" height="80" fill="#2d3436"/>
+
+  <!-- 三条色块 -->
+  <rect x="10" y="8" width="27" height="80" class="strip-1"/>
+  <rect x="37" y="14" width="27" height="80" class="strip-2"/>
+  <rect x="63" y="8" width="27" height="80" class="strip-3"/>
+
+
+</svg>
