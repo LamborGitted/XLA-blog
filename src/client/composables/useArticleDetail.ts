@@ -17,6 +17,7 @@ export function useArticleCard(article: ArticleMeta) {
 
     // 防抖定时器
     let renderTimer: ReturnType<typeof setTimeout> | null = null
+    let isFirstRender = true // 标记是否为首次渲染
 
     /**
      * 渲染 Markdown 内容
@@ -40,14 +41,21 @@ export function useArticleCard(article: ArticleMeta) {
 
     /**
      * 防抖渲染（300ms 延迟）
+     * 首次渲染立即执行，后续变化才防抖
      */
     function debouncedRender() {
-        // 清除上次的定时器
+        // 首次渲染立即执行
+        if (isFirstRender) {
+            isFirstRender = false
+            render()
+            return
+        }
+
+        // 后续渲染使用防抖
         if (renderTimer) {
             clearTimeout(renderTimer)
         }
 
-        // 设置新的定时器
         renderTimer = setTimeout(() => {
             render()
             renderTimer = null
