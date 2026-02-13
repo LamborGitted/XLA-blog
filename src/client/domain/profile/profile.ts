@@ -27,6 +27,7 @@ export interface Profile {
 export const DEFAULT_PROFILE: Profile = {
   name: 'Lantxx',
   title: '全栈开发者',
+  avatar: 'https://github.com/LamborGitted.png', // GitHub 头像（格式：https://github.com/{username}.png）
   bio: '热爱技术，专注于前端开发与用户体验设计。喜欢探索新技术，分享开发经验。',
   skills: [
     'Vue.js',

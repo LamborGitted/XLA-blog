@@ -52,7 +52,11 @@ const getSocialIcon = (iconName?: string) => {
         <div class="profile-content">
           <!-- 头部信息 -->
           <div class="profile-header">
-            <div class="avatar-placeholder">
+            <!-- 头像：优先使用图片，否则显示首字母 -->
+            <div v-if="profile.avatar" class="avatar-image">
+              <img :src="profile.avatar" :alt="profile.name" />
+            </div>
+            <div v-else class="avatar-placeholder">
               <span class="avatar-text">{{ profile.name.charAt(0) }}</span>
             </div>
             <h2 class="profile-name">{{ profile.name }}</h2>
@@ -257,6 +261,21 @@ const getSocialIcon = (iconName?: string) => {
   justify-content: center;
   margin-bottom: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .avatar-text {
@@ -524,7 +543,8 @@ const getSocialIcon = (iconName?: string) => {
     padding-bottom: 20px;
   }
 
-  .avatar-placeholder {
+  .avatar-placeholder,
+  .avatar-image {
     width: 70px;
     height: 70px;
   }
@@ -562,7 +582,8 @@ const getSocialIcon = (iconName?: string) => {
     padding: 16px;
   }
 
-  .avatar-placeholder {
+  .avatar-placeholder,
+  .avatar-image {
     width: 60px;
     height: 60px;
   }

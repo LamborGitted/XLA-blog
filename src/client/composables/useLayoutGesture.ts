@@ -113,6 +113,11 @@ export function useLayoutGesture(config: Partial<GestureConfig> = {}) {
    * 处理滚轮事件
    */
   function handleWheel(event: WheelEvent) {
+    // 按 Ctrl 键时禁用滚轮切换（避免干扰页面缩放）
+    if (event.ctrlKey) {
+      return
+    }
+
     // 检查是否在目标区域内
     if (!isEventInTarget(event)) {
       return

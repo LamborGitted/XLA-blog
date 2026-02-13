@@ -88,27 +88,27 @@ useLayoutGesture({
 
 /* ArticleList 滑动动画 */
 .article-list-slide-enter-active {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .article-list-slide-leave-active {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .article-list-slide-enter-from {
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(-200%) skew(-19deg);
 }
 
 .article-list-slide-leave-to {
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(-200%) skew(-19deg);
 }
 
 /* WidgetPanel 滑动动画 */
 .widget-panel-slide-enter-active,
 .widget-panel-slide-leave-active {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .widget-panel-slide-enter-from {

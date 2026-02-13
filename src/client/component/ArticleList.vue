@@ -155,7 +155,7 @@ watch(scrollTop, (newScrollTop) => {
           @click="handleItemClick(pathToIndexMap.get(item.path)!, item.path)"
         >
           <div class="title">{{ item.title }}</div>
-<!--          <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>-->
+  <!--          <div v-if="item.subtitle" class="subtitle">{{ item.subtitle }}</div>-->
           <div v-if="item.tags && item.tags.length > 0" class="article-tags">
             <TagBadge
               v-for="tag in item.tags"
@@ -294,6 +294,37 @@ watch(scrollTop, (newScrollTop) => {
               box-shadow 0.3s ease;
 }
 
+/* 流动的彩色渐变边框 */
+.article-item::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 10px;
+  padding: 4px;
+  background: conic-gradient(
+    from 0deg,
+    #ff6b6b,
+    #ffd93d,
+    #6bcb77,
+    #4d96ff,
+    #cc78ff,
+    #ff6b6b
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: borderFlow 3s linear infinite;
+  pointer-events: none;
+}
+
+.article-item:hover::before {
+  opacity: 1;
+}
+
 /* 初始进入动画 */
 @keyframes slideInUp {
   from {
@@ -344,6 +375,16 @@ watch(scrollTop, (newScrollTop) => {
   100% {
     transform: scale(4);
     opacity: 0;
+  }
+}
+
+/* 彩虹边框流动动画 */
+@keyframes borderFlow {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
   }
 }
 
