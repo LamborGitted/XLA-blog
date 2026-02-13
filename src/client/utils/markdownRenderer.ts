@@ -131,15 +131,25 @@ class MarkdownRenderer {
                     'div', 'span', 'del', 's', 'sub', 'sup'
                 ],
                 // 允许的属性白名单
-                // 注意：style 属性是必须的，Shiki 代码高亮依赖它
+                // 注意：style 属性已从全局移除，仅通过 hook 允许代码块标签使用
                 ALLOWED_ATTR: [
                     'href', 'src', 'alt', 'title', 'class',
-                    'id', 'width', 'height', 'target', 'rel', 'style'
+                    'id', 'width', 'height', 'target', 'rel'
                 ],
                 // 允许的 URI 协议（防止 javascript: 等危险协议）
                 ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
                 // 强制外部链接添加 rel="noopener noreferrer"
-                ADD_ATTR: ['rel']
+                ADD_ATTR: ['rel'],
+                // 添加 hooks：仅允许代码块标签（<pre> 和 <code>）保留 style 属性
+                // @ts-expect-error - DOMPurify 的类型定义不完整，但 hook 是有效的
+                uponSanitizeAttribute: (node: Element, data: { attrName: string; attrValue: string }) => {
+                    if (data.attrName === 'style') {
+                        const tagName = node.tagName.toLowerCase()
+                        if (tagName !== 'pre' && tagName !== 'code') {
+                            data.attrValue = ''
+                        }
+                    }
+                }
             })
 
             return cleanHtml

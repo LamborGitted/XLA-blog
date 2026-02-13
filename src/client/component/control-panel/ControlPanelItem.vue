@@ -37,13 +37,13 @@ const handleClick = () => {
   switch (props.item.type) {
     case ControlItemType.LINK:
       if (props.item.link) {
-        window.open(props.item.link, '_blank')
+        window.open(props.item.link, '_blank', 'noopener,noreferrer')
       }
       break
     case ControlItemType.NAVIGATION:
       if (props.item.link) {
         if (props.item.link.startsWith('http')) {
-          window.open(props.item.link, '_blank')
+          window.open(props.item.link, '_blank', 'noopener,noreferrer')
         } else {
           // TODO: 实现内部导航
           console.log('导航到:', props.item.link)
