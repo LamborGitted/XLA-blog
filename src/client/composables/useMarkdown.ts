@@ -1,6 +1,8 @@
 import { ref } from 'vue'
 import type { ArticleMeta } from '@/client/domain/doc/articles.ts'
 import type { ArticleFrontMatter } from '@/client/domain/doc/articles.ts'
+import type { ArticleLoadResult } from '@/client/domain/error/articleError'
+import { ErrorType, ErrorLevel } from '@/client/domain/error/articleError'
 
 /**
  * 读取 @/contact/docs 下所有 markdown 文件
@@ -89,50 +91,102 @@ function parseYamlValue(key: string, lines: string[], startIndex: number): { val
     return { value: rawValue, nextIndex: startIndex }
 }
 
-export function parseFrontMatter(content: string): { frontMatter: ArticleFrontMatter, body: string } {
+export function parseFrontMatter(content: string, fileName: string): {
+    frontMatter: ArticleFrontMatter
+    body: string
+    hasError?: boolean
+    errorType?: ErrorType
+    errorMessage?: string
+} {
     const frontMatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)
+
     if (!frontMatterMatch) {
         return { frontMatter: {}, body: content }
     }
 
     const [, frontMatterStr, body] = frontMatterMatch
 
-    const frontMatter: ArticleFrontMatter = {}
-    const lines = (frontMatterStr ?? '').split(/\r?\n/)
+    try {
+        const frontMatter: ArticleFrontMatter = {}
+        const lines = (frontMatterStr ?? '').split(/\r?\n/)
 
-    let i = 0
-    while (i < lines.length) {
-        const line = lines[i]!
-        const colonIndex = line.indexOf(':')
+        let i = 0
+        while (i < lines.length) {
+            const line = lines[i]!
+            const colonIndex = line.indexOf(':')
 
-        if (colonIndex > 0) {
-            const key = line.substring(0, colonIndex).trim()
-            const result = parseYamlValue(key, lines, i)
-            frontMatter[key] = result.value
-            i = result.nextIndex + 1
-        } else {
-            i++
+            if (colonIndex > 0) {
+                const key = line.substring(0, colonIndex).trim()
+                const result = parseYamlValue(key, lines, i)
+                frontMatter[key] = result.value
+                i = result.nextIndex + 1
+            } else {
+                i++
+            }
+        }
+
+        return { frontMatter, body: body ?? content, hasError: false }
+    } catch (e) {
+        // frontmatter 解析失败，降级处理
+        console.warn(`[useMarkdown] frontmatter 解析失败 (${fileName}):`, e)
+
+        return {
+            frontMatter: {},  // 返回空对象，降级为普通 Markdown
+            body: content,
+            hasError: true,
+            errorType: ErrorType.FRONTMATTER_PARSE,
+            errorMessage: '元数据解析失败，文章将以基础模式显示'
+        }
+    }
+}
+
+export async function useMarkdown(): Promise<ArticleLoadResult[]> {
+    const results: ArticleLoadResult[] = []
+    const entries = Object.entries(modules)
+
+    for (const [path, raw] of entries) {
+        try {
+            const fileName = path.split('/').pop()!.replace('.md', '')
+            const content = raw as string
+
+            // 调用增强的 parseFrontMatter
+            const { frontMatter, body, hasError, errorType, errorMessage } =
+                parseFrontMatter(content, fileName)
+
+            const article: ArticleMeta = {
+                id: fileName,
+                title: frontMatter.title || extractTitle(body, fileName),
+                subtitle: frontMatter.subtitle,
+                date: frontMatter.date,
+                tags: frontMatter.tags as string[] | undefined,
+                content: content,
+                path,
+                meta: frontMatter,
+                hasError,
+                errorType,
+                errorMessage
+            }
+
+            results.push({
+                success: true,
+                article
+            })
+        } catch (e) {
+            // 记录加载失败
+            results.push({
+                success: false,
+                error: {
+                    type: ErrorType.FILE_LOAD,
+                    level: ErrorLevel.ERROR,
+                    message: e instanceof Error ? e.message : '文件加载失败',
+                    articleId: path.split('/').pop()!.replace('.md', ''),
+                    path,
+                    timestamp: Date.now(),
+                    details: e
+                }
+            })
         }
     }
 
-    return { frontMatter, body: body ?? content }
-}
-
-export function useMarkdown(): ArticleMeta[] {
-    return Object.entries(modules).map(([path, raw]) => {
-        const fileName = path.split('/').pop()!.replace('.md', '')
-        const content = raw as string
-        const { frontMatter, body } = parseFrontMatter(content)
-
-        return {
-            id: fileName,
-            title: frontMatter.title || extractTitle(body, fileName),
-            subtitle: frontMatter.subtitle,
-            date: frontMatter.date,
-            tags: frontMatter.tags as string[] | undefined,
-            content: content,
-            path,
-            meta: frontMatter
-        }
-    })
+    return results
 }

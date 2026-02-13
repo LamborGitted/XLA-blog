@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useArticleListStore } from '@/stores'
-import { SORT_OPTIONS, type SortOption } from '@/client/composables/useArticleList'
+import { useArticleListStore, SORT_OPTIONS, type SortOption } from '@/stores'
 import { useLinkFilter, LINK_SORT_OPTIONS, type LinkSortOption } from '@/client/composables/useLinkFilter'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
 

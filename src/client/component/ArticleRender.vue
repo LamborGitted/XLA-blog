@@ -4,6 +4,8 @@ import { useArticleListStore } from '@/stores'
 import { useArticleStore } from '@/stores'
 import { useArticleCard } from '@/client/composables/useArticleDetail'
 import { useArticleScroll } from '@/client/composables/article'
+import type { ArticleError } from '@/client/domain/error/articleError'
+import { ErrorLevel, ErrorType } from '@/client/domain/error/articleError'
 import ArticleLayout from './article/ArticleLayout.vue'
 import ArticleHeader from './article/ArticleHeader.vue'
 import ArticleContent from './article/ArticleContent.vue'
@@ -36,10 +38,30 @@ const articleProxy = reactive({
 })
 
 // 使用 useArticleCard 获取渲染逻辑
-const { detail, isRendering } = useArticleCard(articleProxy)
+const { detail, isRendering, renderError, retryRender } = useArticleCard(articleProxy)
 
 // 当前文章详情
 const articleDetail = computed(() => detail.value)
+
+// 传递错误信息到 ArticleContent
+const articleError = computed(() => {
+  if (!currentArticle.value?.hasError) return null
+
+  return {
+    type: currentArticle.value.errorType!,
+    level: ErrorLevel.WARN,
+    message: currentArticle.value.errorMessage || '文章加载有警告',
+    articleId: currentArticle.value.id,
+    timestamp: Date.now()
+  } as ArticleError
+})
+
+// 重试处理
+function handleRetry() {
+  if (renderError.value) {
+    retryRender()
+  }
+}
 
 // 显示/隐藏
 function show() { visible.value = true }
@@ -78,10 +100,13 @@ defineExpose({ show, hide })
     <!-- 文章头部信息 -->
     <ArticleHeader :article="articleDetail" />
 
-    <!-- Markdown 渲染内容 -->
+    <!-- Markdown 渲染内容（传递错误状态） -->
     <ArticleContent
       :article="articleDetail"
       :is-rendering="isRendering"
+      :render-error="renderError"
+      :article-error="articleError"
+      @retry="handleRetry"
     />
 
     <!-- 上一篇/下一篇导航 -->

@@ -14,6 +14,8 @@ export interface ArticleFrontMatter {
   [key: string]: string | string[] | boolean | undefined
 }
 
+import type { ErrorType } from '@/client/domain/error/articleError'
+
 /**
  * 文章元数据
  */
@@ -33,4 +35,9 @@ export interface ArticleMeta {
   path: string
 
   meta?: ArticleFrontMatter
+
+  // 错误相关字段
+  hasError?: boolean
+  errorType?: ErrorType
+  errorMessage?: string
 }

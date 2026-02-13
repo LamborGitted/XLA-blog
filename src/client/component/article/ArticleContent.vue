@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { watch, nextTick, onMounted } from 'vue'
 import { useCodeCopy } from '@/client/composables/useCodeCopy'
+import ArticleError from './ArticleError.vue'
+import type { ArticleError as ArticleErrorType } from '@/client/domain/error/articleError'
 
 interface ArticleDetail {
   htmlContent?: string
@@ -10,9 +12,17 @@ interface ArticleDetail {
 interface Props {
   article: ArticleDetail | null
   isRendering: boolean
+  renderError?: Error | null
+  articleError?: ArticleErrorType | null
 }
 
 const props = defineProps<Props>()
+
+interface Emits {
+  (e: 'retry'): void
+}
+
+const emit = defineEmits<Emits>()
 
 // ==================== 代码复制功能 ====================
 const { initCodeCopy, destroyCodeCopy } = useCodeCopy({
@@ -34,13 +44,40 @@ onMounted(() => {
 
 // 组件卸载时清理（由父组件处理）
 defineExpose({ destroyCodeCopy })
+
+// 重试处理
+function handleRetry() {
+  emit('retry')
+}
 </script>
 
 <template>
   <!-- 加载状态 -->
   <div v-if="isRendering" class="article-loading">
-    加载中...
+    <div class="loading-spinner"></div>
+    <p>加载中...</p>
   </div>
+
+  <!-- 渲染错误 -->
+  <ArticleError
+    v-else-if="renderError"
+    :error="{
+      type: 'render' as any,
+      level: 'error' as any,
+      message: renderError.message || '文章渲染失败',
+      timestamp: Date.now()
+    }"
+    :article-id="article?.title"
+    @retry="handleRetry"
+  />
+
+  <!-- 元数据错误警告 -->
+  <ArticleError
+    v-else-if="articleError && articleError.level === 'warn'"
+    :error="articleError"
+    :article-id="article?.title"
+    @retry="handleRetry"
+  />
 
   <!-- Markdown 渲染内容 -->
   <div
@@ -54,11 +91,26 @@ defineExpose({ destroyCodeCopy })
 /* ==================== 加载状态 ==================== */
 .article-loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 200px;
   font-size: 1.1rem;
   color: var(--color-textSecondary);
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ==================== Markdown 内容样式 ==================== */

@@ -12,6 +12,9 @@ export function useArticleCard(article: ArticleMeta) {
     const htmlContent = ref('')
     const isRendering = ref(false)
 
+    // 错误状态
+    const renderError = ref<Error | null>(null)
+
     /**
      * 渲染 Markdown 内容
      */
@@ -19,11 +22,23 @@ export function useArticleCard(article: ArticleMeta) {
         if (!article.content) return
 
         isRendering.value = true
+        renderError.value = null
+
         try {
-            htmlContent.value = await MarkdownRenderer.render(article.content)
+            htmlContent.value = await MarkdownRenderer.render(article.content, article.id)
+        } catch (e) {
+            // 渲染失败
+            renderError.value = e instanceof Error ? e : new Error('渲染失败')
+            console.error(`[useArticleCard] 渲染失败 (${article.id}):`, e)
         } finally {
             isRendering.value = false
         }
+    }
+
+    // 重试渲染
+    async function retryRender() {
+        renderError.value = null
+        await render()
     }
 
     // 监听 article 变化，自动重新渲染
@@ -57,7 +72,9 @@ export function useArticleCard(article: ArticleMeta) {
         htmlContent,
         readingTime,
         excerpt,
-        isRendering
+        isRendering,
+        renderError,
+        retryRender
     }
 }
 

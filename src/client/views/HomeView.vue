@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, computed } from 'vue'
 import BackgroundSwitcher from "@/client/component/BackgroundSwitcher.vue"
 import ArticleList from "@/client/component/ArticleList.vue"
 import ArticleRender from "@/client/component/ArticleRender.vue"
@@ -9,6 +9,7 @@ import PageTitle from "@/client/component/PageTitle.vue"
 import ProfileCard from "@/client/component/ProfileCard.vue"
 import WidgetPanel from "@/client/component/widget/WidgetPanel.vue"
 import LinkList from "@/client/component/LinkList.vue"
+import ArticleError from '@/client/component/article/ArticleError.vue'
 import { useArticleListStore } from '@/stores'
 import { useArticleStore } from '@/stores'
 import { useLayoutTransform } from '@/client/composables/useLayoutTransform'
@@ -19,8 +20,8 @@ const articleListStore = useArticleListStore()
 const articleStore = useArticleStore()
 
 // 初始化文章列表
-onMounted(() => {
-  articleListStore.initialize()
+onMounted(async () => {
+  await articleListStore.initialize()
   articleStore.init()
 })
 
@@ -31,6 +32,16 @@ onUnmounted(() => {
 
 // 布局变换
 const { isWidgetsMode, isLinkListMode } = useLayoutTransform()
+
+// 获取错误状态
+const loading = computed(() => articleListStore.isLoading)
+const error = computed(() => articleListStore.error)
+const hasError = computed(() => articleListStore.hasError)
+
+// 全局重试
+async function handleGlobalRetry() {
+  await articleListStore.retryInitialize()
+}
 
 // 启用手势控制（仅在背景和 PageTitle 上生效）
 useLayoutGesture({
@@ -43,8 +54,24 @@ useLayoutGesture({
 
 <template>
   <div class="main">
-    <!-- PageTitle - 始终显示，通过 class 切换位置 -->
-    <PageTitle :class="{ 'title-left': isWidgetsMode || isLinkListMode }" v-if="!isLinkListMode" />
+    <!-- 全局加载状态 -->
+    <div v-if="loading" class="global-loading">
+      <div class="loading-spinner"></div>
+      <p>加载文章中...</p>
+    </div>
+
+    <!-- 全局错误 -->
+    <div v-else-if="hasError && error" class="global-error">
+      <ArticleError
+        :error="error"
+        @retry="handleGlobalRetry"
+      />
+    </div>
+
+    <!-- 正常内容 -->
+    <template v-else>
+      <!-- PageTitle - 始终显示，通过 class 切换位置 -->
+      <PageTitle :class="{ 'title-left': isWidgetsMode || isLinkListMode }" v-if="!isLinkListMode" />
 
     <!-- FilterPanel - 小组件模式下隐藏，向上移动动画 -->
     <Transition name="filter-panel-slide">
@@ -71,6 +98,7 @@ useLayoutGesture({
     <ArticleRender />
     <ControlPanel />
     <ProfileCard />
+    </template>
   </div>
 </template>
 
@@ -79,6 +107,41 @@ useLayoutGesture({
   position: fixed;
   width: 100%;
   height: 100%;
+}
+
+/* 全局加载和错误样式 */
+.global-loading,
+.global-error {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.global-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.global-error {
+  width: 90%;
+  max-width: 500px;
 }
 
 /* PageTitle 位置变换 - 通过 class 平滑过渡 */

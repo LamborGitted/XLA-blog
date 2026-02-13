@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { ArticleMeta } from '@/client/domain/doc/articles'
 import { useMarkdown, extractTitle } from '@/client/composables/useMarkdown'
+import type { ArticleError } from '@/client/domain/error/articleError'
+import { ErrorType, ErrorLevel } from '@/client/domain/error/articleError'
+import type { ArticleLoadResult } from '@/client/domain/error/articleError'
 
 export type SortOption = 'date-desc' | 'date-asc' | 'title-asc' | 'title-desc'
 
@@ -31,6 +34,11 @@ export const useArticleListStore = defineStore('articleList', () => {
   const query = ref('')
   const sortBy = ref<SortOption>('date-desc')
 
+  // 错误状态管理
+  const loading = ref(false)
+  const error = ref<ArticleError | null>(null)
+  const failedArticles = ref<Map<string, ArticleError>>(new Map())
+
   // Computed
   const currentArticle = computed(() => {
     if (selectedIndex.value === -1) return null
@@ -46,6 +54,10 @@ export const useArticleListStore = defineStore('articleList', () => {
     if (selectedIndex.value === -1 || selectedIndex.value >= filteredArticles.value.length - 1) return null
     return filteredArticles.value[selectedIndex.value + 1] ?? null
   })
+
+  // 错误状态计算属性
+  const hasError = computed(() => error.value !== null)
+  const isLoading = computed(() => loading.value)
 
   // Actions
   function sortArticles(articles: ArticleMeta[], sortOption: SortOption): ArticleMeta[] {
@@ -100,15 +112,69 @@ export const useArticleListStore = defineStore('articleList', () => {
     selectedIndex.value = -1
   }
 
-  function initialize() {
-    const docs = useMarkdown()
+  async function initialize() {
+    loading.value = true
+    error.value = null
+    failedArticles.value.clear()
 
-    originalArticles.value = docs.map(doc => ({
-      ...doc,
-      subtitle: doc.content ? extractSubtitle(doc.content) : ''
-    }))
+    try {
+      // 调用 useMarkdown 加载文章
+      const loadResults = await useMarkdown()
 
-    applyFilterAndSort()
+      // 分离成功和失败的文章
+      const successful: ArticleMeta[] = []
+      const failed: ArticleError[] = []
+
+      for (const result of loadResults) {
+        if (result.success && result.article) {
+          successful.push(result.article)
+        } else if (result.error) {
+          failed.push(result.error)
+          if (result.error.articleId) {
+            failedArticles.value.set(result.error.articleId, result.error)
+          }
+        }
+      }
+
+      // 记录加载成功的文章
+      originalArticles.value = successful.map(doc => ({
+        ...doc,
+        subtitle: doc.content ? extractSubtitle(doc.content) : ''
+      }))
+
+      // 如果有失败的文章，记录警告
+      if (failed.length > 0) {
+        console.warn(`[ArticleListStore] ${failed.length} 篇文章加载失败:`, failed)
+      }
+
+      // 如果全部失败，设置全局错误
+      if (successful.length === 0) {
+        error.value = {
+          type: ErrorType.INIT,
+          level: ErrorLevel.FATAL,
+          message: '所有文章加载失败，请刷新页面重试',
+          timestamp: Date.now()
+        }
+      }
+
+      applyFilterAndSort()
+    } catch (e) {
+      // 捕获未预期的错误
+      error.value = {
+        type: ErrorType.INIT,
+        level: ErrorLevel.FATAL,
+        message: e instanceof Error ? e.message : '初始化失败',
+        timestamp: Date.now(),
+        details: e
+      }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 重试初始化
+  async function retryInitialize() {
+    await initialize()
   }
 
   function selectByIndex(index: number) {
@@ -154,14 +220,20 @@ export const useArticleListStore = defineStore('articleList', () => {
     selectedIndex,
     query,
     sortBy,
+    loading,
+    error,
+    hasError,
+    failedArticles,
 
     // Computed
     currentArticle,
     prevArticle,
     nextArticle,
+    isLoading,
 
     // Actions
     initialize,
+    retryInitialize,
     selectByIndex,
     searchArticles,
     setSort,

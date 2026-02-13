@@ -5,6 +5,7 @@ import {
   applyFontPreset,
   type PageTitleConfig
 } from '@/client/domain/view/PageTitle'
+import { useTypewriter } from '@/client/composables/useTypewriter'
 
 // Props
 interface Props {
@@ -29,13 +30,43 @@ const titleConfig = computed(() => {
   return config
 })
 
-// 标题和副标题始终显示完整文本
-const titleText = computed(() => titleConfig.value.title.text)
-const subtitleText = computed(() => titleConfig.value.subtitle?.text || '')
+// 打字机效果 - 必须在顶层调用
+const titleResult = useTypewriter(
+  () => titleConfig.value.title.text,
+  () => titleConfig.value.title.typewriter || {
+    speed: 100,
+    delay: 500,
+    blinkSpeed: 700,
+    showCursor: true,
+    cursorChar: '|',
+  }
+)
 
-// 光标始终显示
+const subtitleResult = useTypewriter(
+  () => titleConfig.value.subtitle?.text || '',
+  () => titleConfig.value.subtitle?.typewriter || {
+    speed: 100,
+    delay: 1500,
+    blinkSpeed: 700,
+    showCursor: true,
+    cursorChar: '|',
+  }
+)
+
+// 光标显示控制
 const showTitleCursor = computed(() => titleConfig.value.title.typewriter?.showCursor !== false)
 const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter?.showCursor !== false)
+
+// 光标闪烁控制：只在打字完成后才闪烁
+const titleCursorClass = computed(() => {
+  const isComplete = titleResult.isComplete.value
+  return isComplete ? 'cursor cursor-blink' : 'cursor'
+})
+
+const subtitleCursorClass = computed(() => {
+  const isComplete = subtitleResult.isComplete.value
+  return isComplete ? 'cursor cursor-blink' : 'cursor'
+})
 </script>
 
 <template>
@@ -51,17 +82,17 @@ const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter
         lineHeight: titleConfig.title.font?.lineHeight
       }"
     >
-      {{ titleText }}
+      {{ titleResult.text }}
       <span
         v-if="showTitleCursor"
-        class="cursor"
+        :class="titleCursorClass"
         :style="{ animationDuration: titleConfig.title.typewriter?.blinkSpeed + 'ms' }"
       >{{ titleConfig.title.typewriter?.cursorChar || '|' }}</span>
     </h1>
 
     <!-- 副标题 -->
     <h2
-      v-if="titleConfig.subtitle?.visible && subtitleText"
+      v-if="titleConfig.subtitle?.visible && subtitleResult.text"
       class="page-subtitle"
       :style="{
         fontFamily: titleConfig.subtitle.font?.family,
@@ -70,10 +101,10 @@ const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter
         lineHeight: titleConfig.subtitle.font?.lineHeight
       }"
     >
-      {{ subtitleText }}
+      {{ subtitleResult.text }}
       <span
         v-if="showSubtitleCursor"
-        class="cursor"
+        :class="subtitleCursorClass"
         :style="{ animationDuration: titleConfig.subtitle.typewriter?.blinkSpeed + 'ms' }"
       >{{ titleConfig.subtitle.typewriter?.cursorChar || '|' }}</span>
     </h2>
@@ -119,8 +150,12 @@ const showSubtitleCursor = computed(() => titleConfig.value.subtitle?.typewriter
 /* 光标闪烁动画 */
 .cursor {
   display: inline-block;
-  animation: blink 1s step-end infinite;
   margin-left: 2px;
+}
+
+/* 只在打字完成后才闪烁 */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
 }
 
 @keyframes blink {

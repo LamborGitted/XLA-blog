@@ -106,40 +106,51 @@ class MarkdownRenderer {
 
     /**
      * 渲染 Markdown 为 HTML（带 XSS 防护）
+     * @param markdown - Markdown 内容
+     * @param articleId - 文章 ID（用于错误日志记录）
      */
-    static async render(markdown: string): Promise<string> {
-        const md = await this.getInstance()
+    static async render(markdown: string, articleId?: string): Promise<string> {
+        try {
+            const md = await this.getInstance()
 
-        // 移除 frontmatter
-        const cleanMarkdown = this.removeFrontmatter(markdown)
-        const rawHtml = md.render(cleanMarkdown)
+            // 移除 frontmatter
+            const cleanMarkdown = this.removeFrontmatter(markdown)
+            const rawHtml = md.render(cleanMarkdown)
 
-        // 使用 DOMPurify 清理 HTML，防止 XSS 攻击
-        const cleanHtml = DOMPurify.sanitize(rawHtml, {
-            // 允许的标签白名单
-            ALLOWED_TAGS: [
-                'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-                'p', 'br', 'hr',
-                'ul', 'ol', 'li',
-                'strong', 'b', 'em', 'i', 'code', 'pre',
-                'a', 'img',
-                'blockquote',
-                'table', 'thead', 'tbody', 'tr', 'th', 'td',
-                'div', 'span', 'del', 's', 'sub', 'sup'
-            ],
-            // 允许的属性白名单
-            // 注意：style 属性是必须的，Shiki 代码高亮依赖它
-            ALLOWED_ATTR: [
-                'href', 'src', 'alt', 'title', 'class',
-                'id', 'width', 'height', 'target', 'rel', 'style'
-            ],
-            // 允许的 URI 协议（防止 javascript: 等危险协议）
-            ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
-            // 强制外部链接添加 rel="noopener noreferrer"
-            ADD_ATTR: ['rel']
-        })
+            // 使用 DOMPurify 清理 HTML，防止 XSS 攻击
+            const cleanHtml = DOMPurify.sanitize(rawHtml, {
+                // 允许的标签白名单
+                ALLOWED_TAGS: [
+                    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                    'p', 'br', 'hr',
+                    'ul', 'ol', 'li',
+                    'strong', 'b', 'em', 'i', 'code', 'pre',
+                    'a', 'img',
+                    'blockquote',
+                    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                    'div', 'span', 'del', 's', 'sub', 'sup'
+                ],
+                // 允许的属性白名单
+                // 注意：style 属性是必须的，Shiki 代码高亮依赖它
+                ALLOWED_ATTR: [
+                    'href', 'src', 'alt', 'title', 'class',
+                    'id', 'width', 'height', 'target', 'rel', 'style'
+                ],
+                // 允许的 URI 协议（防止 javascript: 等危险协议）
+                ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+                // 强制外部链接添加 rel="noopener noreferrer"
+                ADD_ATTR: ['rel']
+            })
 
-        return cleanHtml
+            return cleanHtml
+        } catch (e) {
+            // 增强错误处理：记录文章 ID
+            const errorMessage = articleId
+                ? `渲染失败 (${articleId}): ${e instanceof Error ? e.message : '未知错误'}`
+                : `渲染失败: ${e instanceof Error ? e.message : '未知错误'}`
+            console.error(`[MarkdownRenderer] ${errorMessage}`, e)
+            throw new Error(errorMessage)
+        }
     }
 }
 

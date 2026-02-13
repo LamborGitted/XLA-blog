@@ -85,7 +85,10 @@ export const DEFAULT_PAGE_TITLE: PageTitleConfig = {
     visible: true,
     animated: true,
     font: DEFAULT_FONT,
-    typewriter: DEFAULT_TYPEWRITER,
+    typewriter: {
+      ...DEFAULT_TYPEWRITER,
+      showCursor: false, // 标题不显示光标
+    },
   },
   subtitle: {
     id: 'subtitle',
@@ -96,6 +99,7 @@ export const DEFAULT_PAGE_TITLE: PageTitleConfig = {
     typewriter: {
       ...DEFAULT_TYPEWRITER,
       delay: 1500, // 副标题延迟更长时间开始
+      showCursor: false, // 副标题不显示光标
     },
   },
 };
